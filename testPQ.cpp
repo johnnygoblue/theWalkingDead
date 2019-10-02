@@ -1,3 +1,4 @@
+// IDENTIFIER  = 9504853406CBAC39EE89AA3AD238AA12CA198043
 /*
  * Compile this test against your .h files to make sure they compile. Note how
  * the eecs281 priority queues can be constructed with the different types. We
@@ -167,7 +168,7 @@ int main() {
         cout << "Unknown container!" << endl << endl;
         exit(1);
     } // else
-   
+
     testPriorityQueue(pq, types[choice]);
     testUpdatePriorities(types[choice]);
 

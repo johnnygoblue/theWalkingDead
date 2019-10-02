@@ -1,3 +1,4 @@
+// IDENTIFIER  = 9504853406CBAC39EE89AA3AD238AA12CA198043
 Here are some test cases with output.  They were all run with verbose
 and median modes turned on.  The "spec" and "small" tests were run with
 -s 10; the "large" test with -s 100.

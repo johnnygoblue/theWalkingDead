@@ -21,7 +21,7 @@
 # TODO (begin) #
 #######################
 # Change IDENTIFIER to match the project identifier given in the project spec.
-IDENTIFIER  = EEC50281EEC50281EEC50281EEC50281EEC50281
+IDENTIFIER  = 9504853406CBAC39EE89AA3AD238AA12CA198043
 
 # Change EXECUTABLE to match the command name given in the project spec.
 EXECUTABLE  = executable
@@ -68,7 +68,7 @@ FULL_SUBMITFILE = fullsubmit.tar.gz
 PERF_FILE = perf.data*
 
 #Default Flags (we prefer -std=c++17 but Mac/Xcode/Clang doesn't support)
-CXXFLAGS = -std=c++1z -Wconversion -Wall -Werror -Wextra -pedantic 
+CXXFLAGS = -std=c++1z -Wconversion -Wall -Werror -Wextra -pedantic
 
 # make release - will compile "all" with $(CXXFLAGS) and the -O3 flag
 #                also defines NDEBUG so that asserts will not check

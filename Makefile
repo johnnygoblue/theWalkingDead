@@ -24,7 +24,7 @@
 IDENTIFIER  = 9504853406CBAC39EE89AA3AD238AA12CA198043
 
 # Change EXECUTABLE to match the command name given in the project spec.
-EXECUTABLE  = executable
+EXECUTABLE  = zombbb
 
 # The following line looks for a project's main() in files named project*.cpp,
 # executable.cpp (substituted from EXECUTABLE above), or main.cpp

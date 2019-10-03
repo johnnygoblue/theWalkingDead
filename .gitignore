@@ -1,0 +1,8 @@
+**.swp
+tags
+ctags
+testPQ
+*.dSYM/
+*.o
+*.d
+*.a

@@ -19,6 +19,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <deque>
 
 #include "BinaryPQ.h"
 #include "Eecs281PQ.h"
@@ -46,26 +47,55 @@ void testHiddenData(const string &pqType) {
         int data;
     };
     struct HiddenDataComp {
-        bool operator()(const HiddenData &/*a*/, const HiddenData &/*b*/) const {
+        bool operator()(const HiddenData &a, const HiddenData &b) const {
             // TODO: Finish this functor; when you do, uncomment the
             // parameters in the line above
-            return false;
+            return a.data < b.data;
         }
     };
 
     cout << "Testing " << pqType << " with hidden data\n";
 } // testHiddenData()
 
+// Print out contents of a PQ in one line
+// Implemented by Johnny Chan as a helper function
+void printPQHelper(Eecs281PQ<int *, IntPtrComp> *pq) {
+	std::deque<int *> temp;
+	cout << "Priority Queue => ";
+	if (pq->empty()) {
+		cout << "(Empty)";
+	}
+	while (!pq->empty()) {
+		cout << *pq->top() << " ";
+		temp.push_back(pq->top());
+		pq->pop();
+	}
+	while(!temp.empty()) {
+		pq->push(temp.back());
+		temp.pop_back();
+	}
+	cout << "\n";
+}
 
 // TODO: Add more code to this function to test if updatePriorities()
 // is working properly.
 void testUpdatePrioritiesHelper(Eecs281PQ<int *, IntPtrComp> *pq) {
     vector<int> data{ 1, 5 };
-    pq->push(&data[0]);
+	vector<int> johnny_primes{ 19, 7, 17, 23, 11, 13 };
+	vector<int> ret = { 23, 19, 17, 13, 11, 10, 7, 5 };
+	pq->push(&data[0]);
     pq->push(&data[1]);
     data[0] = 10;
     pq->updatePriorities();
     assert(*pq->top() == 10);
+	for (size_t i = 0; i < johnny_primes.size(); ++i) {
+		pq->push(&johnny_primes[i]);
+	}
+	pq->updatePriorities();
+	for (size_t i = 0; i < ret.size(); ++i) {
+		assert(*pq->top() == ret[i]);
+		pq->pop();
+	}
 } // testUpdatePrioritiesHelper()
 
 
@@ -169,8 +199,8 @@ int main() {
         exit(1);
     } // else
 
-    testPriorityQueue(pq, types[choice]);
-    testUpdatePriorities(types[choice]);
+    testPriorityQueue(pq, types[(size_t)choice]);
+    testUpdatePriorities(types[(size_t)choice]);
 
     if (choice == 3) {
         vector<int> vec;

@@ -1,6 +1,7 @@
 **.swp
 tags
 ctags
-*.o
-*.d
-*.a
+**.o
+**.d
+**.a
+partA/zombbb

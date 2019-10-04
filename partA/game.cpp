@@ -56,7 +56,7 @@ void Game::read_header() {
 		} else if (attr == "random-seed:") {
 			cin >> val;
 			random_seed = (unsigned)stol(val);
-		} else if (attr == "max-rand-dist:") {
+		} else if (attr == "max-rand-distance:") {
 			cin >> val;
 			max_rand_dist = (unsigned)stol(val);
 		} else if (attr == "max-rand-speed:") {
@@ -72,4 +72,17 @@ void Game::read_header() {
 			exit(1);
 		}
 	} // while
+}
+
+void Game::dbg_read_header() {
+	cout << "-----------------------------------\n";
+	cout << "quiver-capicity = " << quiver_cap << endl;
+	cout << "random-seed = " << random_seed << endl;
+	cout << "max-rand-distance = " << max_rand_dist << endl;
+	cout << "max-rand-speed = " << max_rand_speed << endl;
+	cout << "max-rand-health = " << max_rand_health << endl;
+	cout << "statistics number = " << stats_num << endl;
+	cout << "print verbose = " << verbose << endl;
+	cout << "print median = " << median << endl;
+	cout << "-----------------------------------\n";
 }

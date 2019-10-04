@@ -4,6 +4,7 @@ class Game {
 		Game() {}
 		void get_options(int argc, char **argv);
 		void read_header();
+		void dbg_read_header();
 	private:
 		unsigned quiver_cap = 0;
 		unsigned random_seed = 0;

@@ -31,7 +31,7 @@ public:
     // TODO: When you implement this function, uncomment the parameter names.
     template<typename InputIterator>
     SortedPQ(InputIterator start, InputIterator end, COMP_FUNCTOR comp = COMP_FUNCTOR()) :
-        BaseClass{ comp }, data{ std::vector(start, end) } {
+        BaseClass{ comp }, data{ std::vector<InputIterator>(start, end) } {
         // TODO: Implement this function
 		std::sort(data.begin(), data.end(), comp);
 	} // SortedPQ

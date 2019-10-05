@@ -116,7 +116,7 @@ void Game::spawnZombies(unsigned round_num) {
 		unsigned distance = P2random::getNextZombieDistance();
 		unsigned speed = P2random::getNextZombieSpeed();
 		unsigned health = P2random::getNextZombieHealth();
-		pq_creation.push(Zombie(name, distance, speed, health, round_num, order));
+		pq_create.push(&Zombie(name, distance, speed, health, round_num, order));
 		++order;
 	}
 	// spawn named zombies
@@ -132,7 +132,7 @@ void Game::spawnZombies(unsigned round_num) {
 		speed = (unsigned)stol(val);
 		cin >> attr >> val;
 		health = (unsigned)stol(val);
-		pq_creation.push(Zombie(name, distance, speed, health, round_num, order));
+		pq_create.push(&Zombie(name, distance, speed, health, round_num, order));
 		++order;
 	}
 }

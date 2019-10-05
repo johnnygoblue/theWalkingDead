@@ -2,7 +2,7 @@
 
 class Zombie {
 	public:
-		Zombie(string name, unsigned dist, unsigned sp, unsigned hp, unsigned round, unsigned order) : name(name), distance(dist), speed(sp), health(hp), round_created(round), order_created(order), round_killed(0) {}
+		Zombie(const string name, const unsigned dist, const unsigned sp, const unsigned hp, const unsigned round, const unsigned order) : name(name), distance(dist), speed(sp), health(hp), round_created(round), order_created(order), round_killed(0) {}
 		unsigned getETA() {
 			return distance / speed;
 		};
@@ -24,6 +24,7 @@ struct SortByCreation {
 		} else { // created in same round
 			return left.order_created > right.order_created;
 		}
+	}
 };
 
 struct SortByETA {

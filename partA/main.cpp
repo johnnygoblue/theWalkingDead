@@ -2,8 +2,9 @@
 
 int main(int argc, char **argv) {
 	Game zombie = Game();
-	zombie.get_options(argc, argv);
-	zombie.read_header();
-	zombie.dbg_read_header();
+	zombie.getOptions(argc, argv);
+	zombie.readHeader();
+	//zombie.dbg_read_header();
+	zombie.startGame();
 	return 0;
 }

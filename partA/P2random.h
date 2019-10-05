@@ -69,4 +69,4 @@ private:
     static MersenneTwister mt;
 };
 
-#endif 
+#endif

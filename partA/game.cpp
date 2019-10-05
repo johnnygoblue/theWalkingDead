@@ -1,4 +1,6 @@
 #include "game.h"
+#include "zombie.h"
+#include "P2random.h"
 
 #include <iostream>
 #include <getopt.h>
@@ -11,7 +13,7 @@ using std::cin;
 using std::endl;
 using std::string;
 
-void Game::get_options(int argc, char **argv) {
+void Game::getOptions(int argc, char **argv) {
 	int option_index = 0, option = 0;
 	opterr = false;
 
@@ -42,9 +44,14 @@ void Game::get_options(int argc, char **argv) {
 	} // while
 }
 
-void Game::read_header() {
+void Game::readHeader() {
 	string attr = "";
 	string val = "";
+	unsigned rand_seed = 0;
+	unsigned max_rand_dist = 0;
+	unsigned max_rand_speed = 0;
+	unsigned max_rand_hp = 0;
+
 	while (cin >> attr) {
 		if (attr == "#") {
 			getline(cin, val);
@@ -55,7 +62,7 @@ void Game::read_header() {
 			quiver_cap = (unsigned)stol(val);
 		} else if (attr == "random-seed:") {
 			cin >> val;
-			random_seed = (unsigned)stol(val);
+			rand_seed = (unsigned)stol(val);
 		} else if (attr == "max-rand-distance:") {
 			cin >> val;
 			max_rand_dist = (unsigned)stol(val);
@@ -64,7 +71,7 @@ void Game::read_header() {
 			max_rand_speed = (unsigned)stol(val);
 		} else if (attr == "max-rand-health:") {
 			cin >> val;
-			max_rand_health = (unsigned)stol(val);
+			max_rand_hp = (unsigned)stol(val);
 		} else if (attr == "---") {
 			return;
 		} else {
@@ -72,17 +79,60 @@ void Game::read_header() {
 			exit(1);
 		}
 	} // while
+	P2random::initialize(rand_seed, max_rand_dist, max_rand_speed, max_rand_hp);
 }
 
-void Game::dbg_read_header() {
-	cout << "-----------------------------------\n";
-	cout << "quiver-capicity = " << quiver_cap << endl;
-	cout << "random-seed = " << random_seed << endl;
-	cout << "max-rand-distance = " << max_rand_dist << endl;
-	cout << "max-rand-speed = " << max_rand_speed << endl;
-	cout << "max-rand-health = " << max_rand_health << endl;
-	cout << "statistics number = " << stats_num << endl;
-	cout << "print verbose = " << verbose << endl;
-	cout << "print median = " << median << endl;
-	cout << "-----------------------------------\n";
+void Game::startGame() {
+}
+
+// Return new round from input, 0 if no new round available
+unsigned Game::getNewRound() {
+	string round;
+	cin >> round;
+	if (round == "round") {
+		cin >> round;
+		return (unsigned)stol(round);
+	}
+	return 0;
+}
+
+void Game::spawnZombies(unsigned round_num) {
+	string attr = "";
+	string val = "";
+	unsigned order = 0;
+	unsigned num_rand_zombies = 0;
+	unsigned num_named_zombies = 0;
+
+	cin >> attr;
+	cin >> val;
+	num_rand_zombies = (unsigned)stol(val);
+	cin >> attr;
+	cin >> val;
+	num_named_zombies = (unsigned)stol(val);
+
+	// spawn random zombies
+	for (size_t i = 0; i < num_rand_zombies; ++i) {
+		string name = P2random::getNextZombieName();
+		unsigned distance = P2random::getNextZombieDistance();
+		unsigned speed = P2random::getNextZombieSpeed();
+		unsigned health = P2random::getNextZombieHealth();
+		pq_creation.push(Zombie(name, distance, speed, health, round_num, order));
+		++order;
+	}
+	// spawn named zombies
+	for (size_t i = 0; i < num_named_zombies; ++i) {
+		string name = "";
+		unsigned distance = 0;
+		unsigned speed = 0;
+		unsigned health = 0;
+		cin >> name;
+		cin >> attr >> val;
+		distance = (unsigned)stol(val);
+		cin >> attr >> val;
+		speed = (unsigned)stol(val);
+		cin >> attr >> val;
+		health = (unsigned)stol(val);
+		pq_creation.push(Zombie(name, distance, speed, health, round_num, order));
+		++order;
+	}
 }

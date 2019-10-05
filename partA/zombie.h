@@ -1,9 +1,10 @@
+#include <string>
 #include <queue>
 
 class Zombie {
 	public:
-		Zombie(const string name, const unsigned dist, const unsigned sp, const unsigned hp, const unsigned round, const unsigned order) : name(name), distance(dist), speed(sp), health(hp), round_created(round), order_created(order), round_killed(0) {}
-		unsigned getETA() {
+		Zombie(const std::string name, const unsigned dist, const unsigned sp, const unsigned hp, const unsigned round, const unsigned order) : name(name), distance(dist), speed(sp), health(hp), round_created(round), order_created(order), round_killed(0) {}
+		unsigned getETA() const {
 			return distance / speed;
 		};
 		std::string name;

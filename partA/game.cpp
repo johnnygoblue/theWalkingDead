@@ -1,11 +1,9 @@
 #include "game.h"
-#include "zombie.h"
 #include "P2random.h"
 
 #include <iostream>
 #include <getopt.h>
 #include <cstdlib>
-#include <string>
 
 using std::cerr;
 using std::cout;
@@ -116,7 +114,8 @@ void Game::spawnZombies(unsigned round_num) {
 		unsigned distance = P2random::getNextZombieDistance();
 		unsigned speed = P2random::getNextZombieSpeed();
 		unsigned health = P2random::getNextZombieHealth();
-		pq_create.push(&Zombie(name, distance, speed, health, round_num, order));
+		Zombie rand = Zombie(name, distance, speed, health, round_num, order);
+		pq_create.push(&rand);
 		++order;
 	}
 	// spawn named zombies
@@ -132,7 +131,8 @@ void Game::spawnZombies(unsigned round_num) {
 		speed = (unsigned)stol(val);
 		cin >> attr >> val;
 		health = (unsigned)stol(val);
-		pq_create.push(&Zombie(name, distance, speed, health, round_num, order));
+		Zombie named = Zombie(name, distance, speed, health, round_num, order);
+		pq_create.push(&named);
 		++order;
 	}
 }

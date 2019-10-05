@@ -1,5 +1,8 @@
+#include "zombie.h"
+
 #include <queue>
 #include <string>
+#include <vector>
 
 class Game {
 	public:
@@ -13,8 +16,8 @@ class Game {
 		unsigned getNewRound();
 		void spawnZombies(unsigned round);
 
-		priority_queue<Zombie *, vector<Zombie *>, SortByCreation()> pq_create;
-		priority_queue<Zombie *, vector<Zombie *>, SortByETA()> pq_eta;
+		std::priority_queue<Zombie *, std::vector<Zombie *>, SortByCreation()> pq_create;
+		std::priority_queue<Zombie *, std::vector<Zombie *>, SortByETA()> pq_eta;
 		unsigned quiver_cap = 0;
 		unsigned stats_num = 0;
 		bool verbose = false;

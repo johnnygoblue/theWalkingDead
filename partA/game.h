@@ -13,13 +13,21 @@ class Game {
 		/* end of pubic members */
 
 	private:
-		unsigned getNewRound();
-		void spawnZombies(unsigned round);
+		unsigned getNextRound();
+		void updateZombies(unsigned int curr_round);
+		void spawnZombies(unsigned int curr_round);
+		void attackZombies(unsigned int curr_round);
+		void printMedian(unsigned int curr_round);
+		void printOutput(unsigned int curr_round);
+		void printStats();
 
-		std::priority_queue<Zombie *, std::vector<Zombie *>, SortByCreation()> pq_create;
-		std::priority_queue<Zombie *, std::vector<Zombie *>, SortByETA()> pq_eta;
-		unsigned quiver_cap = 0;
-		unsigned stats_num = 0;
+		std::vector<Zombie> zombie;
+		std::vector<Zombie *> killed;
+		std::priority_queue<Zombie *, std::vector<Zombie *>, ETAComparator> pq_eta;
+		std::string killer_zombie = "";
+		unsigned int quiver_cap = 0;
+		unsigned int stats_num = 0;
+		bool is_player_alive = true;
 		bool verbose = false;
 		bool median = false;
 		/* end of private members */

@@ -7,8 +7,14 @@ class Zombie {
 		unsigned getETA() const {
 			return distance / speed;
 		};
-		int getLifeTime() const {
-			return round_killed - round_created;
+		unsigned getLifeTime() const {
+			return round_killed - round_created + 1;
+		}
+		unsigned getLifeTime(unsigned int last_round) const {
+			if (round_killed == 0) {
+				return last_round - round_created + 1;
+			}
+			return getLifeTime();
 		}
 		std::string name;
 		unsigned int distance;
@@ -36,10 +42,32 @@ struct ETAComparator {
 	} // operator
 };
 
+// Only killed container should use this comparator
 struct LifeTimeComparator {
 	bool operator()(const Zombie *left, const Zombie *right) const {
 		if (left->getLifeTime() > right->getLifeTime()) {
 			return true;
 		}
 		return false;
-}
+	}
+};
+
+// Create this class instance when doing a total life sort on zombie vector
+// this should only be called upon when printing statistics
+class SortByLifeTime {
+	const std::vector<Zombie> &_z;
+	unsigned int _last;
+
+	public:
+		SortByLifeTime(const std::vector<Zombie> &z, unsigned int last_round) : _z(z), _last(last_round) {}
+
+		bool operator()(unsigned int i, unsigned int j) const {
+			if(_z[i].getLifeTime(_last) < _z[j].getLifeTime(_last)) {
+				return true;
+			} else if (_z[i].getLifeTime(_last) > _z[j].getLifeTime(_last)) {
+				return false;
+			} else {
+				return _z[i].name < _z[j].name;
+			}
+		} //operator()()
+};

@@ -13,13 +13,13 @@ class Game {
 		/* end of pubic members */
 
 	private:
-		unsigned getNextRound();
-		void updateZombies(unsigned int curr_round);
+		unsigned int getNextRound();
+		void updateZombies();
 		void spawnZombies(unsigned int curr_round);
 		void attackZombies(unsigned int curr_round);
 		void printMedian(unsigned int curr_round);
 		void printOutput(unsigned int curr_round);
-		void printStats();
+		void printStatistics(unsigned int curr_round);
 
 		std::vector<Zombie> zombie;
 		std::vector<Zombie *> killed;

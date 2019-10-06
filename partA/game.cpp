@@ -97,7 +97,7 @@ void Game::startGame() {
 			cout << "Round " << curr_round << "\n";
 		}
 
-		updateZombies(curr_round);
+		updateZombies();
 
 		if (!is_player_alive) {
 			break; // defeat exit
@@ -111,17 +111,19 @@ void Game::startGame() {
 		attackZombies(curr_round);
 
 		if (median) {
-			printMedian();
+			printMedian(curr_round);
 		}
 
 		++curr_round;
 	} // while
 
 	printOutput(curr_round);
+
+	printStatistics(curr_round);
 }
 
 // Return new round from input, 0 if no new round available
-unsigned Game::getNextRound() {
+unsigned int Game::getNextRound() {
 	string round;
 	cin >> round;
 	if (round == "round") {
@@ -133,7 +135,7 @@ unsigned Game::getNextRound() {
 }
 
 // update zombies according to spec
-void Game::updateZombies(unsigned int curr_round) {
+void Game::updateZombies() {
 	for (auto z : zombie) {
 		if (z.round_killed != 0) {
 			continue;
@@ -226,12 +228,13 @@ void Game::attackZombies(unsigned int curr_round) {
 	} // while
 }
 
+// Print median life time of zombies killed
 void Game::printMedian(unsigned int curr_round) {
 	if (!killed.empty()) {
 		unsigned int body_count = killed.size();
 		float median = 0.0;
 
-		std::sort(killed.begin(), killed.end(), LifeTimeComparator);
+		std::sort(killed.begin(), killed.end(), LifeTimeComparator());
 		if (body_count % 2 == 0) {
 			median = (killed[body_count / 2 - 1]->getLifeTime() +
 					killed[body_count / 2]->getLifeTime) / 2;
@@ -243,6 +246,7 @@ void Game::printMedian(unsigned int curr_round) {
 	}
 }
 
+// Simply print infomation about VICTORY/DEFEAT
 void Game::printOutput(unsigned int curr_round) {
 	if (is_player_alive) {
 		Zombie *z = killed.back();
@@ -252,11 +256,53 @@ void Game::printOutput(unsigned int curr_round) {
 		cout << "DEFEAT IN ROUND " << curr_round << "! " << killer_zombie <<
 			" ate your brains!\n";
 	}
-	if (stats_num) {
-		if (is_player_alive) {
-			printStats();
-		} else {
-			cout << "Zombies still active: " << pq_eta.size() << "\n";
+}
+
+void Game::printStatistics(unsigned curr_round) {
+	// number of zombies still active at the end
+	cout << "Zombies still active: " << pq_eta.size() << "\n";
+
+	// names of the first N zombies that were killed
+	cout << "First zombies killed:\n";
+	for (unsigned int i = 0; i < killed.size(); ++i) {
+		if (i == stats_num) {
+			break;
 		}
+		cout << killed[i]->name << " " << i + 1 << "\n";
+	}
+
+	// names of the last N zombies that were killed
+	cout << "Last zombies killed:\n";
+	for (int i = killed.size() - 1, cnt = stats_num; i >= 0; --i, --cnt) {
+		if (cnt == 0) {
+			break;
+		}
+		cout << killed[(unsigned int)i]->name << " " << cnt << "\n";
+	}
+
+	// index sort all zombies ever created by total life time
+	vector<unsigned> idx = resize(zombie.size());
+	for (unsigned int i = 0; i < zombie.size(); ++i) {
+		idx[i] = i;
+	}
+	SortByLifeTime sblt(&zombie, curr_round);
+	sort(begin(idx), zombie.end(idx), sblt);
+
+	// names of the N zombies who were active for the most number of rounds
+	cout << "Most active zombies:\n";
+	for (int i = idx.size() - 1; i >= 0; --i) {
+		if (idx.size() - i > stats_num) {
+			break;
+		}
+		cout << zombie[idx[i]] << " " << zombie[idx[i]].getLifeTime(curr_round) << "\n";
+	}
+
+	// names of the N zombies who were active for the least number of rounds
+	cout << "Least active zombies:\n";
+	for (unsigned int i = 0; i < idx.size(); ++i) {
+		if (i == stats_num) {
+			break;
+		}
+		cout << zombies[idx[i]].name << " " << zombies[idx[i]].getLifeTime(curr_round) << "\n";
 	}
 }

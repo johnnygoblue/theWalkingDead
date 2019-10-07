@@ -1,0 +1,46 @@
+# A test with more rounds
+quiver-capacity: 10
+random-seed: 1234
+max-rand-distance: 300
+max-rand-speed: 10
+max-rand-health: 5
+---
+round: 1
+random-zombies: 4
+named-zombies: 0
+---
+round: 2
+random-zombies: 4
+named-zombies: 0
+---
+round: 3
+random-zombies: 4
+named-zombies: 0
+---
+round: 4
+random-zombies: 4
+named-zombies: 0
+---
+round: 5
+random-zombies: 4
+named-zombies: 0
+---
+round: 6
+random-zombies: 4
+named-zombies: 0
+---
+round: 7
+random-zombies: 4
+named-zombies: 0
+---
+round: 8
+random-zombies: 4
+named-zombies: 0
+---
+round: 9
+random-zombies: 4
+named-zombies: 0
+---
+round: 10
+random-zombies: 4
+named-zombies: 0

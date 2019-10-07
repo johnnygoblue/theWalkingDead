@@ -59,42 +59,42 @@ void Game::readHeader() {
 		}
 		if (attr == "quiver-capacity:") {
 			cin >> val;
-			quiver_cap = (unsigned)stol(val);
+			quiver_cap = (unsigned int)stoul(val);
 		} else if (attr == "random-seed:") {
 			cin >> val;
-			rand_seed = (unsigned)stol(val);
+			rand_seed = (unsigned int)stoul(val);
 		} else if (attr == "max-rand-distance:") {
 			cin >> val;
-			max_rand_dist = (unsigned)stol(val);
+			max_rand_dist = (unsigned int)stoul(val);
 		} else if (attr == "max-rand-speed:") {
 			cin >> val;
-			max_rand_speed = (unsigned)stol(val);
+			max_rand_speed = (unsigned int)stoul(val);
 		} else if (attr == "max-rand-health:") {
 			cin >> val;
-			max_rand_hp = (unsigned)stol(val);
+			max_rand_hp = (unsigned int)stoul(val);
 		} else if (attr == "---") {
+			P2random::initialize(rand_seed, max_rand_dist, max_rand_speed, max_rand_hp);
 			return;
 		} else {
 			cerr << "Unrecognized header '" << attr << "' in input!" << endl;
 			exit(1);
 		}
 	} // while
-	P2random::initialize(rand_seed, max_rand_dist, max_rand_speed, max_rand_hp);
 }
 
 // main game loop
 void Game::startGame() {
-	unsigned int curr_round = 0; // current round is the round game currently in
+	unsigned int curr_round = 1; // current round is the round game currently in
 	unsigned int next_round = 0; // next round is the round next up from input
 
 	next_round = getNextRound();
 	while (is_player_alive) {
-		if (curr_round != 0 && pq_eta.empty() && curr_round != next_round) {
+		if (pq_eta.empty() && curr_round != next_round) {
 			break; // victory exit
 		}
 
 		if (verbose) {
-			cout << "Round " << curr_round << "\n";
+			cout << "Round: " << curr_round << "\n";
 		}
 
 		updateZombies();
@@ -126,7 +126,7 @@ void Game::startGame() {
 unsigned int Game::getNextRound() {
 	string round;
 	cin >> round;
-	if (round == "round") {
+	if (round == "round:") {
 		cin >> round;
 		return (unsigned int)stol(round);
 	}
@@ -136,18 +136,22 @@ unsigned int Game::getNextRound() {
 
 // update zombies according to spec
 void Game::updateZombies() {
-	for (auto z : zombie) {
-		if (z.round_killed != 0) {
+	for (size_t i = 0; i < zombie.size(); ++i) {
+		// do not update dead zombies
+		if (zombie[i].round_killed != 0) {
 			continue;
 		}
-		z.distance = (unsigned int)std::max((int64_t)0, (int64_t)(z.distance - z.speed));
+		zombie[i].distance = zombie[i].distance > zombie[i].speed ? zombie[i].distance - zombie[i].speed : 0;
 		if (verbose) {
-			cout << "Moved " << z.name << " (distance: " << z.distance <<
-				", speed: " << z.speed << ", health: " << z.health << ")\n";
+			cout << "Moved: " << zombie[i].name << " (distance: " << zombie[i].distance <<
+				", speed: " << zombie[i].speed << ", health: " << zombie[i].health << ")\n";
 		}
-		if (z.distance == 0) {
+		if (zombie[i].distance == 0) {
+			// first zombie eats your brains!
+			if (is_player_alive) {
+				killer_zombie = zombie[i].name;
+			}
 			is_player_alive = false;
-			killer_zombie = z.name;
 		}
 	} // for
 }
@@ -176,11 +180,10 @@ void Game::spawnZombies(unsigned int curr_round) {
 		Zombie rand = Zombie(name, distance, speed, health, curr_round);
 		if (verbose) {
 			cout << "Created: " << rand.name << " (distance: " <<
-				rand.distance << ", speed: " << rand.speed << ", health = " <<
+				rand.distance << ", speed: " << rand.speed << ", health: " <<
 				rand.health << ")\n";
 		}
 		zombie.push_back(rand);
-		pq_eta.push(&rand);
 	}
 	// spawn named zombies
 	for (unsigned int i = 0; i < num_named_zombies; ++i) {
@@ -198,22 +201,30 @@ void Game::spawnZombies(unsigned int curr_round) {
 		Zombie named = Zombie(name, distance, speed, health, curr_round);
 		if (verbose) {
 			cout << "Created: " << named.name << " (distance: " <<
-				named.distance << ", speed: " << named.speed << ", health = " <<
+				named.distance << ", speed: " << named.speed << ", health: " <<
 				named.health << ")\n";
 		}
 		zombie.push_back(named);
-		pq_eta.push(&named);
 	}
+
+	// push the spawned zombie pointers to priority queue
+	for (unsigned long i = zombie.size() - 1, cnt = 0;
+			cnt != num_rand_zombies + num_named_zombies; --i, ++cnt) {
+		pq_eta.push(&zombie[i]);
+	}
+	//dbg_print_pq_eta();
 }
 
 void Game::attackZombies(unsigned int curr_round) {
 	unsigned int arrow = quiver_cap; // number of arrows player currently has
 	Zombie *z = nullptr;
 
+	//cout << "ATTACKING ZOMBIES!\n";
 	while (arrow != 0 && !pq_eta.empty()) {
 		z = pq_eta.top();
 		if (arrow >= z->health) {
 			arrow -= z->health;
+			z->health = 0;
 			z->round_killed = curr_round;
 			if (verbose) {
 				cout << "Destroyed: " << z->name << " (distance: " <<
@@ -231,13 +242,13 @@ void Game::attackZombies(unsigned int curr_round) {
 // Print median life time of zombies killed
 void Game::printMedian(unsigned int curr_round) {
 	if (!killed.empty()) {
-		unsigned int body_count = killed.size();
+		unsigned int body_count = (unsigned int)killed.size();
 		float median = 0.0;
 
-		std::sort(killed.begin(), killed.end(), LifeTimeComparator());
+		std::sort(killed.begin(), killed.end(), Zombie::LifeTimeComparator());
 		if (body_count % 2 == 0) {
 			median = (killed[body_count / 2 - 1]->getLifeTime() +
-					killed[body_count / 2]->getLifeTime) / 2;
+					killed[body_count / 2]->getLifeTime()) / 2;
 		} else {
 			median = killed[body_count / 2]->getLifeTime();
 		}
@@ -273,36 +284,58 @@ void Game::printStatistics(unsigned curr_round) {
 
 	// names of the last N zombies that were killed
 	cout << "Last zombies killed:\n";
-	for (int i = killed.size() - 1, cnt = stats_num; i >= 0; --i, --cnt) {
+	for (unsigned long i = killed.size() - 1, cnt = stats_num; i >= 0; --i, --cnt) {
 		if (cnt == 0) {
 			break;
 		}
-		cout << killed[(unsigned int)i]->name << " " << cnt << "\n";
+		cout << killed[i]->name << " " << cnt << "\n";
 	}
 
 	// index sort all zombies ever created by total life time
-	vector<unsigned> idx = resize(zombie.size());
-	for (unsigned int i = 0; i < zombie.size(); ++i) {
+	std::vector<unsigned> idx(zombie.size(), 0);
+	for (unsigned i = 0; i < zombie.size(); ++i) {
 		idx[i] = i;
 	}
-	SortByLifeTime sblt(&zombie, curr_round);
-	sort(begin(idx), zombie.end(idx), sblt);
+	SortByLifeTimeMin sbltn(zombie, curr_round);
+	sort(begin(idx), end(idx), sbltn);
 
 	// names of the N zombies who were active for the most number of rounds
 	cout << "Most active zombies:\n";
-	for (int i = idx.size() - 1; i >= 0; --i) {
-		if (idx.size() - i > stats_num) {
+	for (unsigned int i = 0; i < idx.size(); ++i) {
+		if (i == stats_num) {
 			break;
 		}
-		cout << zombie[idx[i]] << " " << zombie[idx[i]].getLifeTime(curr_round) << "\n";
+		cout << zombie[idx[i]].name << " " << zombie[idx[i]].getLifeTime(curr_round) << "\n";
 	}
 
+	SortByLifeTimeMax sbltx(zombie, curr_round);
+	sort(begin(idx), end(idx), sbltx);
 	// names of the N zombies who were active for the least number of rounds
 	cout << "Least active zombies:\n";
 	for (unsigned int i = 0; i < idx.size(); ++i) {
 		if (i == stats_num) {
 			break;
 		}
-		cout << zombies[idx[i]].name << " " << zombies[idx[i]].getLifeTime(curr_round) << "\n";
+		cout << zombie[idx[i]].name << " " << zombie[idx[i]].getLifeTime(curr_round) << "\n";
 	}
+}
+
+void Game::dbg_print_pq_eta() {
+	cout << "-------------------------------------------------------------\n";
+	cout << "Printing PQ ETA:\n";
+	while (!pq_eta.empty()) {
+		Zombie *z = pq_eta.top();
+		cout << z->name << " (distance: " << z->distance << ", speed: " << z->speed << ", health: " << z->health << ")\n";
+		pq_eta.pop();
+	}
+	cout << "-------------------------------------------------------------\n";
+}
+
+void Game::dbg_print_zombie_vector() {
+	cout << "-------------------------------------------------------------\n";
+	cout << "Printing Zombie Vector:\n";
+	for (const auto &z : zombie) {
+		cout << z.name << " (distance: " << z.distance << ", speed: " << z.speed << ", health: " << z.health << ")\n";
+	}
+	cout << "-------------------------------------------------------------\n";
 }

@@ -1,9 +1,9 @@
 #include "game.h"
 
 int main(int argc, char **argv) {
-	Game zombie = Game();
-	zombie.getOptions(argc, argv);
-	zombie.readHeader();
-	zombie.startGame();
+	Game deadline = Game();
+	deadline.getOptions(argc, argv);
+	deadline.readHeader();
+	deadline.startGame();
 	return 0;
 }

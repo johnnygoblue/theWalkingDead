@@ -120,7 +120,9 @@ void Game::startGame() {
 
 	printOutput(curr_round);
 
-	printStatistics(curr_round);
+	if (stats_num > 0) {
+		printStatistics(curr_round);
+	}
 }
 
 // Return new round from input, 0 if no new round available

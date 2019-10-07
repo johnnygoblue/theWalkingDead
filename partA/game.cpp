@@ -224,7 +224,7 @@ void Game::attackZombies(unsigned int curr_round) {
 	unsigned int arrow = quiver_cap; // number of arrows player currently has
 	Zombie *z = nullptr;
 
-	//cout << "ATTACKING ZOMBIES!\n";
+	// attack when there is arrow in hand and zombie in sight
 	while (arrow != 0 && !pq_eta.empty()) {
 		z = pq_eta.top();
 		if (arrow >= z->health) {

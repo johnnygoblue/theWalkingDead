@@ -28,7 +28,7 @@ void Game::getOptions(int argc, char **argv) {
 				verbose = true;
 				break;
 			case 's':
-				stats_num  = unsigned(std::stol(optarg));
+				stats_num  = unsigned(std::stoul(optarg));
 				break;
 			case 'm':
 				median = true;
@@ -131,7 +131,7 @@ unsigned int Game::getNextRound() {
 	cin >> round;
 	if (round == "round:") {
 		cin >> round;
-		return (unsigned int)stol(round);
+		return (unsigned int)stoul(round);
 	}
 	cerr << "No next round!\n" << endl;
 	return 0;
@@ -169,10 +169,10 @@ void Game::spawnZombies(unsigned int curr_round) {
 
 	cin >> attr;
 	cin >> val;
-	num_rand_zombies = (unsigned int)stol(val);
+	num_rand_zombies = (unsigned int)stoul(val);
 	cin >> attr;
 	cin >> val;
-	num_named_zombies = (unsigned int)stol(val);
+	num_named_zombies = (unsigned int)stoul(val);
 
 	// spawn random zombies
 	for (unsigned int i = 0; i < num_rand_zombies; ++i) {
@@ -196,11 +196,11 @@ void Game::spawnZombies(unsigned int curr_round) {
 		unsigned int health = 0;
 		cin >> name;
 		cin >> attr >> val;
-		distance = (unsigned int)stol(val);
+		distance = (unsigned int)stoul(val);
 		cin >> attr >> val;
-		speed = (unsigned int)stol(val);
+		speed = (unsigned int)stoul(val);
 		cin >> attr >> val;
-		health = (unsigned int)stol(val);
+		health = (unsigned int)stoul(val);
 		Zombie named = Zombie(name, distance, speed, health, curr_round);
 		if (verbose) {
 			cout << "Created: " << named.name << " (distance: " <<

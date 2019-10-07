@@ -243,7 +243,7 @@ void Game::attackZombies(unsigned int curr_round) {
 void Game::printMedian(unsigned int curr_round) {
 	if (!killed.empty()) {
 		unsigned int body_count = (unsigned int)killed.size();
-		float median = 0.0;
+		unsigned int median = 0;
 
 		std::sort(killed.begin(), killed.end(), Zombie::LifeTimeComparator());
 		if (body_count % 2 == 0) {
@@ -284,11 +284,11 @@ void Game::printStatistics(unsigned curr_round) {
 
 	// names of the last N zombies that were killed
 	cout << "Last zombies killed:\n";
-	for (unsigned long i = killed.size() - 1, cnt = stats_num; i >= 0; --i, --cnt) {
+	for (int64_t i = killed.size() - 1, cnt = stats_num; i >= 0; --i, --cnt) {
 		if (cnt == 0) {
 			break;
 		}
-		cout << killed[i]->name << " " << cnt << "\n";
+		cout << killed[(unsigned int)i]->name << " " << cnt << "\n";
 	}
 
 	// index sort all zombies ever created by total life time

@@ -238,6 +238,7 @@ void Game::attackZombies(unsigned int curr_round) {
 			pq_eta.pop();
 		} else {
 			z->health = z->health - arrow;
+			arrow = 0;
 		}
 	} // while
 }

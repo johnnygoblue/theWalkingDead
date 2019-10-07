@@ -287,7 +287,7 @@ void Game::printStatistics(unsigned curr_round) {
 
 	// names of the last N zombies that were killed
 	cout << "Last zombies killed:\n";
-	for (int64_t i = killed.size() - 1, cnt = stats_num; i >= 0; --i, --cnt) {
+	for (long i = (long)killed.size() - 1, cnt = stats_num; i >= 0; --i, --cnt) {
 		if (cnt == 0) {
 			break;
 		}

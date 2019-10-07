@@ -215,7 +215,9 @@ void Game::spawnZombies(unsigned int curr_round) {
 			cnt != num_rand_zombies + num_named_zombies; --i, ++cnt) {
 		pq_eta.push(&zombie[i]);
 	}
-	//dbg_print_pq_eta();
+
+	// consume "---" below
+	cin >> attr;
 }
 
 void Game::attackZombies(unsigned int curr_round) {

@@ -1,11 +1,16 @@
 // IDENTIFIER  = 9504853406CBAC39EE89AA3AD238AA12CA198043
 #include <string>
 #include <queue>
+#include <iostream>
 
 class Zombie {
 	public:
 		Zombie(const std::string name, const unsigned int dist, const unsigned int sp, const unsigned int hp, const unsigned int round) : name(name), distance(dist), speed(sp), health(hp), round_created(round), round_killed(0) {}
 		unsigned getETA() const {
+			if (speed == 0) {
+				std::cerr << name << " ";
+				std::cerr << "Division by 0!\n ";
+			}
 			return distance / speed;
 		};
 		unsigned getLifeTime() const {

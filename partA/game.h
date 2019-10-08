@@ -14,6 +14,7 @@ class Game {
 		/* end of pubic members */
 
 	private:
+		/* internal functions */
 		unsigned int getNextRound();
 		void updateZombies();
 		void spawnZombies(unsigned int curr_round);
@@ -22,10 +23,11 @@ class Game {
 		void printOutput(unsigned int curr_round);
 		void printStatistics(unsigned int curr_round);
 
-		// debug functions
+		/* debug functions */
 		void dbg_print_pq_eta(unsigned round);
 		void dbg_print_zombie_vector();
 
+		/* member variables */
 		std::vector<Zombie> zombie;
 		std::vector<Zombie *> killed;
 		std::priority_queue<Zombie *, std::vector<Zombie *>, Zombie::ETAComparator> pq_eta;

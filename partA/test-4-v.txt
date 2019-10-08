@@ -1,0 +1,30 @@
+# IDENTIFIER  = 9504853406CBAC39EE89AA3AD238AA12CA198043
+# A test with plenty of named zombies
+quiver-capacity: 1
+random-seed: 1234
+max-rand-distance: 5
+max-rand-speed: 2
+max-rand-health: 2
+---
+round: 1
+random-zombies: 0
+named-zombies: 4
+Ashe d 10 s 1 h 1
+Kled d 2 s 1 h 1
+Janna d 20 s 2 h 1
+Zed d 3 s 1 h 1
+---
+round: 4
+random-zombies: 1
+named-zombies: 5
+Leblanc d 10 s 3 h 1
+ChoGath d 13 s 1 h 2
+Teemo d 6 s 1 h 1
+Zac d 20 s 5 h 3
+Shaco d 2 s 1 h 1
+---
+round: 9
+random-zombies: 0
+named-zombies: 2
+Zoe d 8 s 3 h 1
+Udyr d 10 s 3 h 3

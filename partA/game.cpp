@@ -109,9 +109,6 @@ void Game::startGame() {
 			next_round = getNextRound();
 		}
 
-		//dbg_print_pq_eta(curr_round);
-		//dbg_print_zombie_vector();
-
 		attackZombies(curr_round);
 
 		if (median) {

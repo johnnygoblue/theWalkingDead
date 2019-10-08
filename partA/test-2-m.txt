@@ -1,20 +1,12 @@
 // IDENTIFIER  = 9504853406CBAC39EE89AA3AD238AA12CA198043
-# A test with more rounds
-quiver-capacity: 10
+# A test on median
+quiver-capacity: 5
 random-seed: 1234
-max-rand-distance: 300
+max-rand-distance: 100
 max-rand-speed: 10
-max-rand-health: 5
+max-rand-health: 10
 ---
 round: 1
-random-zombies: 4
-named-zombies: 0
----
-round: 2
-random-zombies: 4
-named-zombies: 0
----
-round: 3
 random-zombies: 4
 named-zombies: 0
 ---
@@ -22,26 +14,26 @@ round: 4
 random-zombies: 4
 named-zombies: 0
 ---
-round: 5
-random-zombies: 4
-named-zombies: 0
----
-round: 6
-random-zombies: 4
-named-zombies: 0
----
 round: 7
 random-zombies: 4
 named-zombies: 0
 ---
-round: 8
-random-zombies: 4
-named-zombies: 0
----
-round: 9
-random-zombies: 4
-named-zombies: 0
----
 round: 10
+random-zombies: 4
+named-zombies: 0
+---
+round: 12
+random-zombies: 3
+named-zombies: 0
+---
+round: 13
+random-zombies: 2
+named-zombies: 0
+---
+round: 14
+random-zombies: 1
+named-zombies: 0
+---
+round: 15
 random-zombies: 4
 named-zombies: 0

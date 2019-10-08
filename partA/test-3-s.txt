@@ -1,0 +1,38 @@
+// IDENTIFIER  = 9504853406CBAC39EE89AA3AD238AA12CA198043
+# A test on statistics and named zombies
+quiver-capacity: 6
+random-seed: 5678
+max-rand-distance: 300
+max-rand-speed: 20
+max-rand-health: 15
+---
+round: 1
+random-zombies: 3
+named-zombies: 0
+---
+round: 2
+random-zombies: 1
+named-zombies: 2
+DonaldTrump d 100 s 20 h 7
+HillaryClinton distance: 200 Speed: 30 Health: 11
+---
+round: 3
+random-zombies: 4
+named-zombies: 0
+---
+round: 6
+random-zombies: 4
+named-zombies: 0
+---
+round: 8
+random-zombies: 4
+named-zombies: 0
+---
+round: 10
+random-zombies: 5
+named-zombies: 0
+---
+round: 12
+random-zombies: 2
+named-zombies: 1
+GoBlue d 20 s 8 h 10

@@ -109,6 +109,9 @@ void Game::startGame() {
 			next_round = getNextRound();
 		}
 
+		//dbg_print_pq_eta(curr_round);
+		//dbg_print_zombie_vector();
+
 		attackZombies(curr_round);
 
 		if (median) {
@@ -144,7 +147,12 @@ void Game::updateZombies() {
 		if (zombie[i].round_killed != 0) {
 			continue;
 		}
-		zombie[i].distance = zombie[i].distance > zombie[i].speed ? zombie[i].distance - zombie[i].speed : 0;
+		if (zombie[i].distance < zombie[i].speed) {
+			zombie[i].distance = 0;
+		} else {
+			zombie[i].distance -= zombie[i].speed;
+		}
+		//zombie[i].distance = zombie[i].distance > zombie[i].speed ? zombie[i].distance - zombie[i].speed : 0;
 		if (verbose) {
 			cout << "Moved: " << zombie[i].name << " (distance: " << zombie[i].distance <<
 				", speed: " << zombie[i].speed << ", health: " << zombie[i].health << ")\n";
@@ -164,6 +172,7 @@ void Game::updateZombies() {
 void Game::spawnZombies(unsigned int curr_round) {
 	string attr = "";
 	string val = "";
+	Zombie *z_ptr = nullptr;
 	unsigned int num_rand_zombies = 0;
 	unsigned int num_named_zombies = 0;
 
@@ -212,8 +221,9 @@ void Game::spawnZombies(unsigned int curr_round) {
 
 	// push the spawned zombie pointers to priority queue
 	for (unsigned long i = zombie.size() - 1, cnt = 0;
-			cnt != num_rand_zombies + num_named_zombies; --i, ++cnt) {
-		pq_eta.push(&zombie[i]);
+			cnt < num_rand_zombies + num_named_zombies; --i, ++cnt) {
+		z_ptr = &zombie[i];
+		pq_eta.push(z_ptr);
 	}
 
 	// consume "---" below
@@ -326,13 +336,20 @@ void Game::printStatistics(unsigned curr_round) {
 	}
 }
 
-void Game::dbg_print_pq_eta() {
+void Game::dbg_print_pq_eta(unsigned round) {
+	std::vector<Zombie *> tmp;
+
 	cout << "-------------------------------------------------------------\n";
-	cout << "Printing PQ ETA:\n";
+	cout << "Printing PQ ETA in round " << round << ":\n";
 	while (!pq_eta.empty()) {
 		Zombie *z = pq_eta.top();
+		tmp.push_back(z);
 		cout << z->name << " (distance: " << z->distance << ", speed: " << z->speed << ", health: " << z->health << ")\n";
 		pq_eta.pop();
+	}
+	while (!tmp.empty()) {
+		pq_eta.push(tmp.back());
+		tmp.pop_back();
 	}
 	cout << "-------------------------------------------------------------\n";
 }

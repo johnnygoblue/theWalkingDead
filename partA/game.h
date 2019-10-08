@@ -23,7 +23,7 @@ class Game {
 		void printStatistics(unsigned int curr_round);
 
 		// debug functions
-		void dbg_print_pq_eta();
+		void dbg_print_pq_eta(unsigned round);
 		void dbg_print_zombie_vector();
 
 		std::vector<Zombie> zombie;

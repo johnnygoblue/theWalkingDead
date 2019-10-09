@@ -295,7 +295,7 @@ void Game::printStatistics(unsigned curr_round) {
 
 	// names of the first N zombies that were killed
 	cout << "First zombies killed:\n";
-	for (unsigned int i = 0; i < zombie.size(); ++i) {
+	for (unsigned int i = 0; i < killed.size(); ++i) {
 		if (i == stats_num) {
 			break;
 		}
@@ -303,11 +303,9 @@ void Game::printStatistics(unsigned curr_round) {
 	}
 
 	// names of the last N zombies that were killed
-	cout << "Last zombies killed:\n";
-	for (size_t i = killed.size() - 1, cnt = stats_num; stats_num != 0; --i, --cnt) {
-		if (cnt == 0) {
-			break;
-		}
+	cout << "Last zombies killed:\n"; // cnt should be min(cnt, killed.size()
+	size_t cnt = stats_num < killed.size() ? stats_num : killed.size();
+	for (size_t i = killed.size() - 1; cnt != 0; --i, --cnt) {
 		cout << killed[i]->name << " " << cnt << "\n";
 		if (i == 0) {
 			break;

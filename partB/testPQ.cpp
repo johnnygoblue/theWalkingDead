@@ -108,7 +108,16 @@ void testUpdatePriorities(const string &pqType) {
     // TODO: Add more types here
     if (pqType == "Unordered") {
         pq = new UnorderedPQ<int *, IntPtrComp>;
-    } // if
+    } else if (pqType == "Sorted") {
+		pq = new SortedPQ<int *, IntPtrComp>;
+	} else if (pqType == "Binary") {
+		pq = new BinaryPQ<int *, IntPtrComp>;
+	} else if (pqType == "Pairing") {
+		pq = new PairingPQ<int *, IntPtrComp>;
+	} else {
+		cout << "You shouldn't be here!\n";
+		exit(1);
+	}
 
     testUpdatePrioritiesHelper(pq);
     delete pq;
@@ -134,6 +143,17 @@ void testPriorityQueue(Eecs281PQ<int> *pq, const string &pqType) {
     assert(pq->empty());
 
     // TODO: Add more testing here!
+	const int NUM = 100;
+	for (int i = 0; i < NUM; ++i) {
+		pq->push(i * 10);
+		assert(pq->size() == (size_t)i+1);
+		assert(pq->top() == i * 10);
+	}
+	for (int i = NUM-1; i >= 0; --i) {
+		assert(pq->top() == i * 10);
+		pq->pop();
+		assert((int)pq->size() == i);
+	}
 
     cout << "testPriorityQueue() succeeded!" << endl;
 } // testPriorityQueue()

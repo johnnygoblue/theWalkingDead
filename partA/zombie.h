@@ -1,6 +1,7 @@
 // IDENTIFIER  = 9504853406CBAC39EE89AA3AD238AA12CA198043
 #include <string>
 #include <queue>
+#include <deque>
 #include <iostream>
 
 class Zombie {
@@ -59,14 +60,14 @@ class Zombie {
 		}; // LifeTimeComparator
 }; // Zombie
 
-// Create this class instance when doing a total life sort on zombie vector
+// Create this class instance when doing a total life sort on zombie deque
 // this should only be called upon when printing statistics
 class SortByLifeTimeMax {
-	const std::vector<Zombie> &_z;
+	const std::deque<Zombie> &_z;
 	unsigned int _last;
 
 	public:
-		SortByLifeTimeMax(const std::vector<Zombie> &z, unsigned int last_round) : _z(z), _last(last_round) {}
+		SortByLifeTimeMax(const std::deque<Zombie> &z, unsigned int last_round) : _z(z), _last(last_round) {}
 
 		bool operator()(unsigned int i, unsigned int j) const {
 			if(_z[i].getLifeTime(_last) < _z[j].getLifeTime(_last)) {
@@ -80,11 +81,11 @@ class SortByLifeTimeMax {
 };
 
 class SortByLifeTimeMin {
-	const std::vector<Zombie> &_z;
+	const std::deque<Zombie> &_z;
 	unsigned int _last;
 
 	public:
-		SortByLifeTimeMin(const std::vector<Zombie> &z, unsigned int last_round) : _z(z), _last(last_round) {}
+		SortByLifeTimeMin(const std::deque<Zombie> &z, unsigned int last_round) : _z(z), _last(last_round) {}
 
 		bool operator()(unsigned int i, unsigned int j) const {
 			if(_z[i].getLifeTime(_last) > _z[j].getLifeTime(_last)) {

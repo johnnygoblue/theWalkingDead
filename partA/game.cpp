@@ -334,7 +334,7 @@ void Game::printStatistics(unsigned curr_round) {
 }
 
 void Game::dbg_print_pq_eta(unsigned round) {
-	std::vector<Zombie *> tmp;
+	std::deque<Zombie *> tmp;
 
 	cout << "-------------------------------------------------------------\n";
 	cout << "Printing PQ ETA in round " << round << ":\n";
@@ -351,9 +351,9 @@ void Game::dbg_print_pq_eta(unsigned round) {
 	cout << "-------------------------------------------------------------\n";
 }
 
-void Game::dbg_print_zombie_vector() {
+void Game::dbg_print_zombie_deque() {
 	cout << "-------------------------------------------------------------\n";
-	cout << "Printing Zombie Vector:\n";
+	cout << "Printing Zombie Deque:\n";
 	for (const auto &z : zombie) {
 		cout << z.name << " (distance: " << z.distance << ", speed: " << z.speed << ", health: " << z.health << ")\n";
 	}

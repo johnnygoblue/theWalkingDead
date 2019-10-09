@@ -25,12 +25,12 @@ class Game {
 
 		/* debug functions */
 		void dbg_print_pq_eta(unsigned round);
-		void dbg_print_zombie_vector();
+		void dbg_print_zombie_deque();
 
 		/* member variables */
-		std::vector<Zombie> zombie;
+		std::deque<Zombie> zombie;
 		std::vector<Zombie *> killed;
-		std::priority_queue<Zombie *, std::vector<Zombie *>, Zombie::ETAComparator> pq_eta;
+		std::priority_queue<Zombie *, std::deque<Zombie *>, Zombie::ETAComparator> pq_eta;
 		std::string killer_zombie = "";
 		unsigned int quiver_cap = 0;
 		unsigned int stats_num = 0;

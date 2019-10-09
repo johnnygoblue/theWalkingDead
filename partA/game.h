@@ -19,9 +19,10 @@ class Game {
 		void updateZombies();
 		void spawnZombies(unsigned int curr_round);
 		void attackZombies(unsigned int curr_round);
+		void updateRemainingZombies(unsigned int curr_round);
 		void printMedian(unsigned int curr_round);
 		void printOutput(unsigned int curr_round);
-		void printStatistics(unsigned int curr_round);
+		void printStatistics();
 
 		/* debug functions */
 		void dbg_print_pq_eta(unsigned round);

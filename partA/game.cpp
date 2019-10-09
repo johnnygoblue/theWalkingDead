@@ -103,6 +103,9 @@ void Game::startGame() {
 		updateZombies();
 
 		if (!is_player_alive) {
+			if (stats_num) {
+				updateRemainingZombies(curr_round);
+			}
 			break; // defeat exit
 		}
 
@@ -123,7 +126,7 @@ void Game::startGame() {
 	printOutput(curr_round);
 
 	if (stats_num > 0) {
-		printStatistics(curr_round);
+		printStatistics();
 	}
 }
 
@@ -258,6 +261,17 @@ void Game::attackZombies(unsigned int curr_round) {
 	} // while
 }
 
+// Update round_killed on zombies that the player did not killed
+// Only call this function when player is eaten and print stats
+// are required
+void Game::updateRemainingZombies(unsigned int curr_round) {
+	for (size_t i = 0; i < zombie.size(); ++i) {
+		if (zombie[i].round_killed == 0) {
+			zombie[i].round_killed = curr_round;
+		}
+	}
+}
+
 // Print median life time of zombies killed
 void Game::printMedian(unsigned int curr_round) {
 	if (!killed.empty()) {
@@ -289,7 +303,7 @@ void Game::printOutput(unsigned int curr_round) {
 	}
 }
 
-void Game::printStatistics(unsigned curr_round) {
+void Game::printStatistics() {
 	// number of zombies still active at the end
 	cout << "Zombies still active: " << pq_eta.size() << "\n";
 
@@ -312,33 +326,62 @@ void Game::printStatistics(unsigned curr_round) {
 		}
 	}
 
-	// index sort all zombies ever created by total life time
-	std::vector<unsigned> idx(zombie.size(), 0);
-	for (unsigned i = 0; i < zombie.size(); ++i) {
-		idx[i] = i;
+	// create deque of zombie pointers for PQ initialization
+	std::deque<Zombie *> zombie_ptr(zombie.size(), nullptr);
+	for (size_t i = 0; i < zombie.size(); ++i) {
+		zombie_ptr[i] = &zombie[i];
 	}
-	SortByLifeTimeMin sbltn(zombie, curr_round);
-	sort(begin(idx), end(idx), sbltn);
+
+	// create PQs to hold zombie pointer based on total life time
+	std::priority_queue<Zombie *, std::deque<Zombie *>, Zombie::MaxLifeTimeComparator> pqMax(zombie_ptr.begin(), zombie_ptr.end());
 
 	// names of the N zombies who were active for the most number of rounds
 	cout << "Most active zombies:\n";
-	for (unsigned int i = 0; i < idx.size(); ++i) {
-		if (i == stats_num) {
-			break;
-		}
-		cout << zombie[idx[i]].name << " " << zombie[idx[i]].getLifeTime(curr_round) << "\n";
+	size_t num = stats_num < zombie.size() ? stats_num : zombie.size();
+	for (size_t i = 0; i < num; ++i) {
+		Zombie *z_ptr = pqMax.top();
+		cout << z_ptr->name << " " << z_ptr->getLifeTime() << "\n";
+		pqMax.pop();
 	}
 
-	SortByLifeTimeMax sbltx(zombie, curr_round);
-	sort(begin(idx), end(idx), sbltx);
+	std::priority_queue<Zombie *, std::deque<Zombie *>, Zombie::MinLifeTimeComparator> pqMin(zombie_ptr.begin(), zombie_ptr.end());
+
 	// names of the N zombies who were active for the least number of rounds
 	cout << "Least active zombies:\n";
-	for (unsigned int i = 0; i < idx.size(); ++i) {
-		if (i == stats_num) {
-			break;
-		}
-		cout << zombie[idx[i]].name << " " << zombie[idx[i]].getLifeTime(curr_round) << "\n";
+	num = stats_num < zombie.size() ? stats_num : zombie.size();
+	for (size_t i = 0; i < num; ++i) {
+		Zombie *z_ptr = pqMin.top();
+		cout << z_ptr->name << " " << z_ptr->getLifeTime() << "\n";
+		pqMin.pop();
 	}
+
+	//// index sort all zombies ever created by total life time
+	//std::vector<unsigned> idx(zombie.size(), 0);
+	//for (unsigned i = 0; i < zombie.size(); ++i) {
+	//	idx[i] = i;
+	//}
+	//SortByLifeTimeMin sbltn(zombie, curr_round);
+	//sort(begin(idx), end(idx), sbltn);
+
+	//// names of the N zombies who were active for the most number of rounds
+	//cout << "Most active zombies:\n";
+	//for (unsigned int i = 0; i < idx.size(); ++i) {
+	//	if (i == stats_num) {
+	//		break;
+	//	}
+	//	cout << zombie[idx[i]].name << " " << zombie[idx[i]].getLifeTime(curr_round) << "\n";
+	//}
+
+	//SortByLifeTimeMax sbltx(zombie, curr_round);
+	//sort(begin(idx), end(idx), sbltx);
+	//// names of the N zombies who were active for the least number of rounds
+	//cout << "Least active zombies:\n";
+	//for (unsigned int i = 0; i < idx.size(); ++i) {
+	//	if (i == stats_num) {
+	//		break;
+	//	}
+	//	cout << zombie[idx[i]].name << " " << zombie[idx[i]].getLifeTime(curr_round) << "\n";
+	//}
 }
 
 void Game::dbg_print_pq_eta(unsigned round) {

@@ -58,6 +58,33 @@ class Zombie {
 				return false;
 			}
 		}; // LifeTimeComparator
+
+		// Only used in printing statistics
+		struct MinLifeTimeComparator {
+			bool operator()(const Zombie *left, const Zombie *right) const {
+				if (left->getLifeTime() > right->getLifeTime()) {
+					return true;
+				} else if (left->getLifeTime() < right->getLifeTime()) {
+					return false;
+				} else {
+					return left->name > right->name;
+				}
+			}
+		}; // MinLifeTimeComparator
+
+		// Only used in printing statistics
+		struct MaxLifeTimeComparator {
+			bool operator()(const Zombie *left, const Zombie *right) const {
+				if (left->getLifeTime() < right->getLifeTime()) {
+					return true;
+				} else if (left->getLifeTime() > right->getLifeTime()) {
+					return false;
+				} else {
+					return left->name > right->name;
+				}
+			}
+		}; // MaxLifeTimeComparator
+
 }; // Zombie
 
 // Create this class instance when doing a total life sort on zombie deque

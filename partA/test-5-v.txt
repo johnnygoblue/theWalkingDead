@@ -1,0 +1,11 @@
+# A test with only one given round
+quiver-capacity: 1
+random-seed: 1234
+max-rand-distance: 5
+max-rand-speed: 2
+max-rand-health: 2
+---
+round: 5
+random-zombies: 0
+named-zombies: 1
+TwistedFatty d 100 s 20 h 3

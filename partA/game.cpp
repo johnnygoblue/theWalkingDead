@@ -89,8 +89,10 @@ void Game::startGame() {
 	unsigned int next_round = 0; // next round is the round next up from input
 
 	next_round = getNextRound();
+
 	while (is_player_alive) {
-		if (pq_eta.empty() && curr_round != next_round) {
+
+		if (dead_walking && pq_eta.empty() && next_round == 0) {
 			break; // victory exit
 		}
 
@@ -133,7 +135,6 @@ unsigned int Game::getNextRound() {
 		cin >> round;
 		return (unsigned int)stoul(round);
 	}
-	cerr << "No next round!\n" << endl;
 	return 0;
 }
 
@@ -179,6 +180,11 @@ void Game::spawnZombies(unsigned int curr_round) {
 	cin >> attr;
 	cin >> val;
 	num_named_zombies = (unsigned int)stoul(val);
+
+	// if any zombie has been generated in game
+	if (num_rand_zombies + num_named_zombies > 0) {
+		dead_walking = true;
+	}
 
 	// spawn random zombies
 	for (unsigned int i = 0; i < num_rand_zombies; ++i) {

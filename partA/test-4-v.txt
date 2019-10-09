@@ -1,4 +1,3 @@
-# IDENTIFIER  = 9504853406CBAC39EE89AA3AD238AA12CA198043
 # A test with plenty of named zombies
 quiver-capacity: 1
 random-seed: 1234

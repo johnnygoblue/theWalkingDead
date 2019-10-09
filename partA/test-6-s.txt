@@ -1,0 +1,20 @@
+# A test with multiple same ETA
+quiver-capacity: 5
+random-seed: 1234
+max-rand-distance: 5
+max-rand-speed: 2
+max-rand-health: 2
+---
+round: 2
+random-zombies: 0
+named-zombies: 6
+Zomba d 100 s 20 h 3
+Zombb d 100 s 20 h 3
+Zombe d 100 s 20 h 3
+Zombo d 100 s 20 h 3
+Zombi d 100 s 20 h 3
+Zombu d 100 s 20 h 3
+---
+round: 6
+random-zombies: 4
+named-zombies: 0

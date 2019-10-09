@@ -35,6 +35,7 @@ class Game {
 		unsigned int quiver_cap = 0;
 		unsigned int stats_num = 0;
 		bool is_player_alive = true;
+		bool dead_walking = false;
 		bool verbose = false;
 		bool median = false;
 		/* end of private members */

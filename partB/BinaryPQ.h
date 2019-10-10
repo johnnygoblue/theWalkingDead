@@ -5,6 +5,7 @@
 
 
 #include <algorithm>
+using std::swap;
 #include "Eecs281PQ.h"
 
 // A specialized version of the 'heap' ADT implemented as a binary heap.
@@ -19,7 +20,9 @@ public:
     explicit BinaryPQ(COMP_FUNCTOR comp = COMP_FUNCTOR()) :
         BaseClass{ comp } {
         // TODO: Implement this function.
-    } // BinaryPQ
+		TYPE dummy = TYPE();
+		data.resize(1, dummy);
+	} // BinaryPQ
 
 
     // Description: Construct a heap out of an iterator range with an optional
@@ -27,9 +30,11 @@ public:
     // Runtime: O(n) where n is number of elements in range.
     // TODO: when you implement this function, uncomment the parameter names.
     template<typename InputIterator>
-    BinaryPQ(InputIterator /*start*/, InputIterator /*end*/, COMP_FUNCTOR comp = COMP_FUNCTOR()) :
-        BaseClass{ comp } {
-        // TODO: Implement this function.
+    BinaryPQ(InputIterator start, InputIterator end, COMP_FUNCTOR comp = COMP_FUNCTOR()) :
+        BaseClass{ comp }, data{ start, end } {
+			// TODO: Implement this function.
+		TYPE dummy = TYPE();
+		data.insert(begin(data), dummy);
     } // BinaryPQ
 
 
@@ -50,9 +55,11 @@ public:
     // Description: Add a new element to the heap.
     // Runtime: O(log(n))
     // TODO: when you implement this function, uncomment the parameter names.
-    virtual void push(const TYPE & /*val*/) {
+    virtual void push(const TYPE & val) {
         // TODO: Implement this function.
-    } // push()
+		data.push_back(val);
+		fixUp();
+	} // push()
 
 
     // Description: Remove the most extreme (defined by 'compare') element from
@@ -63,7 +70,10 @@ public:
     // Runtime: O(log(n))
     virtual void pop() {
         // TODO: Implement this function.
-    } // pop()
+		data[1] = data[size()];
+		data.pop_back();
+		fixDown(1);
+	} // pop()
 
 
     // Description: Return the most extreme (defined by 'compare') element of
@@ -75,9 +85,8 @@ public:
         // TODO: Implement this function.
 
         // These lines are present only so that this provided file compiles.
-        static TYPE temp; // TODO: Delete this line
-        return temp;      // TODO: Delete or change this line
-    } // top()
+		return data.back();
+	} // top()
 
 
     // Description: Get the number of elements in the heap.
@@ -85,8 +94,8 @@ public:
     virtual std::size_t size() const {
         // TODO: Implement this function.  Might be very simple,
         // depending on your implementation.
-        return 0; // TODO: Delete or change this line
-    } // size()
+		return data.size() - 1;
+	} // size()
 
 
     // Description: Return true if the heap is empty.
@@ -94,8 +103,8 @@ public:
     virtual bool empty() const {
         // TODO: Implement this function.  Might be very simple,
         // depending on your implementation.
-        return true; // TODO: Delete or change this line
-    } // empty()
+		return size() == 0;
+	} // empty()
 
 
 private:
@@ -104,7 +113,23 @@ private:
 
     // TODO: Add any additional member functions or data you require here.
     // For instance, you might add fixUp() and fixDown().
+	void fixUp() {
+		size_t k = size();
+		while (k > 1 && data[k / 2] < data[k]) {
+			swap(data[k], data[k / 2]);
+			k /= 2;
+		} // while
+	} // fixUp
 
+	void fixDown(unsigned k) {
+		while (2 * k <= size()) {
+			unsigned j = 2 * k;
+			if (j < data.size() && data[j] < data[j + 1]) ++j;
+			if (data[k] >= data[j]) break; // heap restored
+			swap(data[k], data[j]);
+			k = j; // move down
+		} // while
+	} // fixDown
 }; // BinaryPQ
 
 

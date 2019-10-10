@@ -47,12 +47,16 @@ public:
     // Description: Assumes that all elements inside the heap are out of order and
     //              'rebuilds' the heap by fixing the heap invariant.
     // Runtime: O(n)
-    virtual void updatePriorities() {
+    // JC: use bottom-up fixDown()
+	virtual void updatePriorities() {
         // TODO: Implement this function.
+		for (unsigned i = (unsigned)size() / 2; i != 0 ; --i) {
+			fixDown(i);
+		}
     } // updatePriorities()
 
 
-    // Description: Add a new element to the heap.
+		// Description: Add a new element to the heap.
     // Runtime: O(log(n))
     // TODO: when you implement this function, uncomment the parameter names.
     virtual void push(const TYPE & val) {

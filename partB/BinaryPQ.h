@@ -90,7 +90,7 @@ public:
         // TODO: Implement this function.
 
         // These lines are present only so that this provided file compiles.
-		return data.back();
+		return data[1];
 	} // top()
 
 
@@ -121,7 +121,7 @@ private:
 	void fixUp() {
 		size_t k = size();
 		//std::cout << "k = " << k << "\n";
-		while (k > 1 && data[k / 2] < data[k]) {
+		while (k > 1 && this->compare(data[k / 2], data[k])) {
 			swap(data[k], data[k / 2]);
 			k /= 2; // move up to parent
 		} // while
@@ -130,8 +130,8 @@ private:
 	void fixDown(unsigned k) {
 		while (2 * k <= size()) {
 			unsigned j = 2 * k; // start with left child
-			if (j < size() && data[j] < data[j + 1]) ++j;
-			if (data[k] >= data[j]) break; // heap restored
+			if (j < size() && this->compare(data[j], data[j + 1])) ++j;
+			if (this->compare(data[j], data[k])) break; // heap restored
 			swap(data[k], data[j]);
 			k = j; // move down
 		} // while

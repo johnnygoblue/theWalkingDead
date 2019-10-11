@@ -36,7 +36,8 @@ public:
 			// TODO: Implement this function.
 		TYPE dummy = TYPE();
 		data.insert(begin(data), dummy);
-    } // BinaryPQ
+		updatePriorities();
+	} // BinaryPQ
 
 
     // Description: Destructor doesn't need any code, the data vector will

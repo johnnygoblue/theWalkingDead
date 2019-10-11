@@ -20,6 +20,7 @@
 #include <string>
 #include <vector>
 #include <deque>
+#include <numeric>
 
 #include "BinaryPQ.h"
 #include "Eecs281PQ.h"
@@ -37,6 +38,12 @@ struct IntPtrComp {
     }
 };
 
+// JC: used to test a priority queue containing unsigned integers.
+struct UnsignedIntComp {
+	bool operator() (const unsigned a, unsigned int b) const {
+		return a < b;
+	}
+};
 
 // TODO: Make sure that you're using this-compare() properly, and everywhere
 // that you should.  Complete this function by adding a functor that compares
@@ -160,6 +167,17 @@ void testPriorityQueue(Eecs281PQ<int> *pq, const string &pqType) {
 		pq->pop();
 		assert((int)pq->size() == i);
 	}
+
+	// Testing range-based constructed PQ
+	//const size_t RANGE = 10000;
+	//vector<unsigned int> v(RANGE);
+	//iota(v.begin(), v.end(), 0);
+	//if (pqType == "Binary") {
+	//	BinaryPQ<unsigned int> *bpq = new BinaryPQ(v.begin(), v.end(), UnsignedIntComp());
+	//	assert(bpq->top() == RANGE - 1);
+	//	assert(bpq->size() == RANGE);
+	//	delete bpq;
+	//}
 
     cout << "testPriorityQueue() succeeded!" << endl;
 } // testPriorityQueue()

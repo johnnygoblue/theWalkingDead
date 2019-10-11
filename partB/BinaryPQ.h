@@ -5,6 +5,7 @@
 
 
 #include <algorithm>
+#include <utility>
 using std::swap;
 #include "Eecs281PQ.h"
 
@@ -119,16 +120,17 @@ private:
     // For instance, you might add fixUp() and fixDown().
 	void fixUp() {
 		size_t k = size();
+		//std::cout << "k = " << k << "\n";
 		while (k > 1 && data[k / 2] < data[k]) {
 			swap(data[k], data[k / 2]);
-			k /= 2;
+			k /= 2; // move up to parent
 		} // while
 	} // fixUp
 
 	void fixDown(unsigned k) {
 		while (2 * k <= size()) {
-			unsigned j = 2 * k;
-			if (j < data.size() && data[j] < data[j + 1]) ++j;
+			unsigned j = 2 * k; // start with left child
+			if (j < size() && data[j] < data[j + 1]) ++j;
 			if (data[k] >= data[j]) break; // heap restored
 			swap(data[k], data[j]);
 			k = j; // move down

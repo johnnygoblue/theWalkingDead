@@ -59,14 +59,14 @@ void testHiddenData(const string &pqType) {
 
 // Print out contents of a PQ in one line
 // Implemented by Johnny Chan as a helper function
-void printPQHelper(Eecs281PQ<int *, IntPtrComp> *pq) {
-	std::deque<int *> temp;
+void printPQHelper(Eecs281PQ<int> *pq) {
+	std::deque<int> temp;
 	cout << "Priority Queue => ";
 	if (pq->empty()) {
 		cout << "(Empty)";
 	}
 	while (!pq->empty()) {
-		cout << *pq->top() << " ";
+		cout << pq->top() << " ";
 		temp.push_back(pq->top());
 		pq->pop();
 	}
@@ -129,16 +129,22 @@ void testPriorityQueue(Eecs281PQ<int> *pq, const string &pqType) {
     cout << "Testing priority queue: " << pqType << endl;
 
     pq->push(3);
-    pq->push(4);
-    assert(pq->size() == 2);
+	printPQHelper(pq);
+    assert(pq->top() == 3);
+	assert(pq->size() == 1);
+	pq->push(4);
+    printPQHelper(pq);
     assert(pq->top() == 4);
+    assert(pq->size() == 2);
 
     pq->pop();
+    printPQHelper(pq);
     assert(pq->size() == 1);
     assert(pq->top() == 3);
     assert(!pq->empty());
 
     pq->pop();
+    printPQHelper(pq);
     assert(pq->size() == 0);
     assert(pq->empty());
 

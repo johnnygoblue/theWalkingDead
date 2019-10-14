@@ -5,6 +5,8 @@
 
 #include "Eecs281PQ.h"
 #include <deque>
+#include <algorithm>
+#include <cassert>
 #include <utility>
 
 // A specialized version of the 'priority_queue' ADT implemented as a pairing heap.
@@ -20,7 +22,7 @@ public:
             // TODO: After you add add one extra pointer (see below), be sure to
             // initialize it here.
             explicit Node(const TYPE &val)
-                : elt{ val }, child{ nullptr }, sibling{ nullptr }
+                : elt{ val }, child{ nullptr }, sibling{ nullptr }, parent{ nullptr }
             {}
 
             // Description: Allows access to the element at that Node's position.
@@ -40,13 +42,14 @@ public:
             Node *child;
             Node *sibling;
             // TODO: Add one extra pointer (parent or previous) as desired.
-    }; // Node
+			Node *parent;
+	}; // Node
 
 
     // Description: Construct an empty priority_queue with an optional comparison functor.
     // Runtime: O(1)
     explicit PairingPQ(COMP_FUNCTOR comp = COMP_FUNCTOR()) :
-        BaseClass{ comp } {
+        BaseClass{ comp }, root{ nullptr }, sz{ 0 } {
         // TODO: Implement this function.
     } // PairingPQ()
 
@@ -56,26 +59,35 @@ public:
     // Runtime: O(n) where n is number of elements in range.
     // TODO: when you implement this function, uncomment the parameter names.
     template<typename InputIterator>
-    PairingPQ(InputIterator /*start*/, InputIterator /*end*/, COMP_FUNCTOR comp = COMP_FUNCTOR()) :
+    PairingPQ(InputIterator start, InputIterator end, COMP_FUNCTOR comp = COMP_FUNCTOR()) :
         BaseClass{ comp } {
         // TODO: Implement this function.
-    } // PairingPQ()
+		while (start != end) {
+			push(*start);
+			++start;
+		}
+	} // PairingPQ()
 
 
     // Description: Copy constructor.
     // Runtime: O(n)
     PairingPQ(const PairingPQ& other) :
-        BaseClass{ other.compare } {
+        BaseClass{ other.compare }, root{ other.root }, sz{ other.sz } {
         // TODO: Implement this function.
-    } // PairingPQ()
+		root = other.root;
+		sz = other.sz;
+	} // PairingPQ()
 
 
     // Description: Copy assignment operator.
     // Runtime: O(n)
     // TODO: when you implement this function, uncomment the parameter names.
-    PairingPQ& operator=(const PairingPQ& /*rhs*/) {
+    PairingPQ& operator=(const PairingPQ& rhs) {
         // TODO: Implement this function.
-
+		// copy-swap method
+		PairingPQ tmp(rhs);
+		std::swap(this->root, rhs.root);
+		std::swap(this->sz, rhs.sz);
         return *this;
     } // operator=()
 
@@ -84,7 +96,8 @@ public:
     // Runtime: O(n)
     ~PairingPQ() {
         // TODO: Implement this function.
-    } // ~PairingPQ()
+		makeEmpty(root);
+	} // ~PairingPQ()
 
 
     // Description: Assumes that all elements inside the priority_queue are out of order and
@@ -100,9 +113,10 @@ public:
     //              function, and this function should call addNode().
     // Runtime: O(1)
     // TODO: when you implement this function, uncomment the parameter names.
-    virtual void push(const TYPE & /*val*/) {
+    virtual void push(const TYPE & val) {
         // TODO: Implement this function.
-    } // push()
+		addNode(val);
+	} // push()
 
 
     // Description: Remove the most extreme (defined by 'compare') element from
@@ -113,7 +127,31 @@ public:
     // Runtime: Amortized O(log(n))
     virtual void pop() {
         // TODO: Implement this function.
-    } // pop()
+		assert(root);
+		assert(!root->parent);
+		assert(!root->sibling);
+
+		std::deque<Node *> dq;
+		Node *tmp = root->child;
+		// fill top-level nodes in deque
+		while (tmp) {
+			dq.push_front(tmp);
+			tmp = tmp->sibling;
+		}
+		// the actual pairing
+		while(dq.size() > 1) {
+			Node *n1 = dq.front();
+			dq.pop_front();
+			Node *n2 = dq.front();
+			dq.pop_front();
+			Node *ret = meld(n1, n2);
+			dq.push_back(ret);
+		}
+		tmp = root;
+		delete tmp;
+		root = dq.front();
+		--sz;
+	} // pop()
 
 
     // Description: Return the most extreme (defined by 'compare') element of
@@ -125,24 +163,23 @@ public:
         // TODO: Implement this function
 
         // These lines are present only so that this provided file compiles.
-        static TYPE temp; // TODO: Delete this line
-        return temp;      // TODO: Delete or change this line
-    } // top()
+		return root->getElt();
+	} // top()
 
 
     // Description: Get the number of elements in the priority_queue.
     // Runtime: O(1)
     virtual std::size_t size() const {
         // TODO: Implement this function
-        return 0; // TODO: Delete or change this line
-    } // size()
+		return sz;
+	} // size()
 
     // Description: Return true if the priority_queue is empty.
     // Runtime: O(1)
     virtual bool empty() const {
         // TODO: Implement this function
-        return true; // TODO: Delete or change this line
-    } // empty()
+		return sz == 0;
+	} // empty()
 
 
     // Description: Updates the priority of an element already in the priority_queue by
@@ -154,9 +191,16 @@ public:
     //
     // Runtime: As discussed in reading material.
     // TODO: when you implement this function, uncomment the parameter names.
-    void updateElt(Node* /*node*/, const TYPE & /*new_value*/) {
+    void updateElt(Node* node, const TYPE & new_value) {
         // TODO: Implement this function
-    } // updateElt()
+		Node *par = node->parent;
+		node->elt = new_value;
+		while (par && this->compare(node->getElt(), par->getElt())) {
+			std::swap(node->elt, par->elt);
+			node = par;
+			par = node->parent;
+		}
+	} // updateElt()
 
 
     // Description: Add a new element to the priority_queue. Returns a Node* corresponding
@@ -167,16 +211,47 @@ public:
     //       never move or copy/delete that node in the future, until it is eliminated
     //       by the user calling pop().  Remember this when you implement updateElt() and
     //       updatePriorities().
-    Node* addNode(const TYPE & /*val*/) {
+    Node* addNode(const TYPE & val) {
         // TODO: Implement this function
-        return nullptr; // TODO: Delete or change this line
-    } // addNode()
+		Node *newNode = new Node(val);
+		++sz;
+		root = meld(newNode, root);
+		return newNode;
+	} // addNode()
 
 
 private:
     // TODO: Add any additional member functions or data you require here.
     // TODO: We recommend creating a 'meld' function (see the Pairing Heap papers).
+	Node* root;
+	size_t sz;
 
+	// Runtime: O(1)
+	Node* meld(Node *a, Node *b) {
+		// make b the child of a and the subtree of a sibling of b
+		assert(a->sibling == nullptr);
+		assert(b->sibling == nullptr);
+
+		if (this->compare(a->getElt(), b->getElt())) {
+			Node *a_sub = a->child;
+			a->child = b;
+			b->sibling = a_sub;
+			return a;
+		}
+		Node *b_sub = b->child;
+		b->child = a;
+		a->sibling = b_sub;
+		return b;
+	}
+
+	// Runtime: O(n)
+	void makeEmpty(Node *n) {
+		while (n) {
+			makeEmpty(n->sibling);
+			makeEmpty(n->child);
+			delete(n);
+		}
+	}
 };
 
 

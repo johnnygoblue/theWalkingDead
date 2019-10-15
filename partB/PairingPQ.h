@@ -76,6 +76,23 @@ public:
         // TODO: Implement this function.
 		root = other.root;
 		sz = other.sz;
+
+		Node *tmp_child = other.root;
+		std::deque<TYPE> dq;
+		while (tmp_child) {
+			Node *tmp_sibling = tmp_child->sibling;
+			dq.push_back(tmp_child->getElt());
+			while (tmp_sibling) {
+				dq.push_back(tmp_sibling->getElt());
+				tmp_sibling = tmp_sibling->sibling;
+			} // while tmp_sibling
+			tmp_child = tmp_child->child;
+		} // while tmp
+		// build a new one
+		while (!dq.empty()) {
+			push(dq.front());
+			dq.pop_front();
+		} // dq
 	} // PairingPQ()
 
 
@@ -86,8 +103,8 @@ public:
         // TODO: Implement this function.
 		// copy-swap method
 		PairingPQ tmp(rhs);
-		std::swap(this->root, rhs.root);
-		std::swap(this->sz, rhs.sz);
+		std::swap(this->root, tmp.root);
+		std::swap(this->sz, tmp.sz);
         return *this;
     } // operator=()
 
@@ -105,7 +122,20 @@ public:
     // Runtime: O(n)
     virtual void updatePriorities() {
         // TODO: Implement this function.
-    } // updatePriorities()
+		if (root) {
+			std::deque<Node *> dq;
+			Node *tmp_child = root;
+			while (tmp_child) {
+				Node *tmp_sibling = tmp_child->sibling;
+				dq.push_back(tmp_child);
+				while (tmp_sibling) {
+					dq.push_back(tmp_sibling);
+					tmp_sibling = tmp_sibling->sibling;
+				} // while tmp_sibling
+				tmp_child = tmp_child->child;
+			} // while tmp_child
+		} // if root
+	} // updatePriorities()
 
 
     // Description: Add a new element to the priority_queue. This is almost done,
@@ -127,30 +157,35 @@ public:
     // Runtime: Amortized O(log(n))
     virtual void pop() {
         // TODO: Implement this function.
-		assert(root);
 		assert(!root->parent);
 		assert(!root->sibling);
 
-		std::deque<Node *> dq;
-		Node *tmp = root->child;
-		// fill top-level nodes in deque
-		while (tmp) {
-			dq.push_front(tmp);
-			tmp = tmp->sibling;
-		}
-		// the actual pairing
-		while(dq.size() > 1) {
-			Node *n1 = dq.front();
-			dq.pop_front();
-			Node *n2 = dq.front();
-			dq.pop_front();
-			Node *ret = meld(n1, n2);
-			dq.push_back(ret);
-		}
-		tmp = root;
-		delete tmp;
-		root = dq.front();
-		--sz;
+		if (root) {
+			std::deque<Node *> dq;
+			Node *tmp = root->child;
+			while (tmp) {
+				dq.push_back(tmp);
+				tmp = tmp->sibling;
+			} // tmp
+
+			for (size_t i = 0; i < dq.size(); ++i) {
+				tmp = dq[i];
+				tmp->parent = nullptr;
+				tmp->sibling = nullptr;
+			} // for dq
+
+			while (dq.size() > 1) {
+				tmp = meld(dq[0], dq[1]);
+				dq.pop_front();
+				dq.pop_front();
+				dq.push_back(tmp);
+			} // while dq.size() != 1
+
+			tmp = root;
+			delete tmp;
+			root = dq.front();
+			--sz;
+		} // if root
 	} // pop()
 
 

@@ -77,10 +77,14 @@ void printPQHelper(Eecs281PQ<int> *pq) {
 		temp.push_back(pq->top());
 		pq->pop();
 	}
+	cout << "|PQ empty|";
+	assert(pq->empty());
 	while(!temp.empty()) {
+		cout << "pushing " << temp.back() << "\n";
 		pq->push(temp.back());
 		temp.pop_back();
 	}
+	cout << "|PQ refilled|";
 	cout << "\n";
 }
 
@@ -93,7 +97,8 @@ void testUpdatePrioritiesHelper(Eecs281PQ<int *, IntPtrComp> *pq) {
 	pq->push(&data[0]);
     pq->push(&data[1]);
     data[0] = 10;
-    pq->updatePriorities();
+    //cout << "Before calling updatePriorities()\n";
+	pq->updatePriorities();
     assert(*pq->top() == 10);
 	for (size_t i = 0; i < johnny_primes.size(); ++i) {
 		pq->push(&johnny_primes[i]);
@@ -103,6 +108,7 @@ void testUpdatePrioritiesHelper(Eecs281PQ<int *, IntPtrComp> *pq) {
 		assert(*pq->top() == ret[i]);
 		pq->pop();
 	}
+	//cout << __func__ << " succeeded!\n";
 } // testUpdatePrioritiesHelper()
 
 
@@ -136,26 +142,27 @@ void testPriorityQueue(Eecs281PQ<int> *pq, const string &pqType) {
     cout << "Testing priority queue: " << pqType << endl;
 
     pq->push(3);
-	printPQHelper(pq);
+	//printPQHelper(pq);
     assert(pq->top() == 3);
 	assert(pq->size() == 1);
 	pq->push(4);
-    printPQHelper(pq);
+    //printPQHelper(pq);
     assert(pq->top() == 4);
     assert(pq->size() == 2);
 
     pq->pop();
-    printPQHelper(pq);
+    //printPQHelper(pq);
     assert(pq->size() == 1);
     assert(pq->top() == 3);
     assert(!pq->empty());
 
     pq->pop();
-    printPQHelper(pq);
+    //printPQHelper(pq);
     assert(pq->size() == 0);
     assert(pq->empty());
 
     // TODO: Add more testing here!
+	/*
 	const int NUM = 100;
 	for (int i = 0; i < NUM; ++i) {
 		pq->push(i * 10);
@@ -167,7 +174,7 @@ void testPriorityQueue(Eecs281PQ<int> *pq, const string &pqType) {
 		pq->pop();
 		assert((int)pq->size() == i);
 	}
-
+	*/
 	// Testing range-based constructed PQ
 	//const size_t RANGE = 10000;
 	//vector<unsigned int> v(RANGE);
@@ -217,14 +224,14 @@ int main() {
     // Basic pointer, allocate a new PQ later based on user choice.
     Eecs281PQ<int> *pq;
     vector<string> types{ "Unordered", "Sorted", "Binary", "Pairing" };
-    int choice;
+    int choice = 3;
 
-    cout << "PQ tester" << endl << endl;
-    for (size_t i = 0; i < types.size(); ++i)
-        cout << "  " << i << ") " << types[i] << endl;
-    cout << endl;
-    cout << "Select one: ";
-    cin >> choice;
+    //cout << "PQ tester" << endl << endl;
+    //for (size_t i = 0; i < types.size(); ++i)
+    //    cout << "  " << i << ") " << types[i] << endl;
+    //cout << endl;
+    //cout << "Select one: ";
+    //cin >> choice;
 
     if (choice == 0) {
         pq = new UnorderedPQ<int>;
@@ -244,7 +251,7 @@ int main() {
     } // else
 
     testPriorityQueue(pq, types[(size_t)choice]);
-    testUpdatePriorities(types[(size_t)choice]);
+	testUpdatePriorities(types[(size_t)choice]);
 
     if (choice == 3) {
         vector<int> vec;

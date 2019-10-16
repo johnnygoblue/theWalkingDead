@@ -5,6 +5,8 @@
 
 #include "Eecs281PQ.h"
 #include <deque>
+#include <iostream>
+using std::cout;
 #include <algorithm>
 #include <cassert>
 #include <utility>
@@ -60,9 +62,9 @@ public:
     // TODO: when you implement this function, uncomment the parameter names.
     template<typename InputIterator>
     PairingPQ(InputIterator start, InputIterator end, COMP_FUNCTOR comp = COMP_FUNCTOR()) :
-        BaseClass{ comp } {
+        BaseClass{ comp }, root{ nullptr }, sz{ 0 } {
         // TODO: Implement this function.
-		while (start != end) {
+			while (start != end) {
 			push(*start);
 			++start;
 		}
@@ -74,25 +76,28 @@ public:
     PairingPQ(const PairingPQ& other) :
         BaseClass{ other.compare }, root{ other.root }, sz{ other.sz } {
         // TODO: Implement this function.
-		root = other.root;
-		sz = other.sz;
-
-		Node *tmp_child = other.root;
-		std::deque<TYPE> dq;
-		while (tmp_child) {
-			Node *tmp_sibling = tmp_child->sibling;
-			dq.push_back(tmp_child->getElt());
-			while (tmp_sibling) {
-				dq.push_back(tmp_sibling->getElt());
-				tmp_sibling = tmp_sibling->sibling;
-			} // while tmp_sibling
-			tmp_child = tmp_child->child;
-		} // while tmp
-		// build a new one
-		while (!dq.empty()) {
-			push(dq.front());
-			dq.pop_front();
-		} // dq
+		if (root) {
+			std::deque<Node *> dq;
+			Node *tmp = root;
+			if (tmp->child) {
+				dq.push_back(tmp->child);
+			}
+			root->child = nullptr;
+			while (!dq.empty()) {
+				tmp = dq.front();
+				if (tmp->sibling) {
+					dq.push_back(tmp->sibling);
+				}
+				if (tmp->child) {
+					dq.push_back(tmp->child);
+				}
+				tmp->parent = nullptr;
+				tmp->sibling = nullptr;
+				tmp->child = nullptr;
+				root = meld(root, tmp);
+				dq.pop_front();
+			} // while dq not empty
+		} // if root
 	} // PairingPQ()
 
 
@@ -113,7 +118,30 @@ public:
     // Runtime: O(n)
     ~PairingPQ() {
         // TODO: Implement this function.
-		makeEmpty(root);
+		if (root) {
+			std::deque<Node *> dq;
+			Node *tmp = root;
+			root = nullptr;
+			if (tmp->child) {
+				dq.push_back(tmp->child);
+			}
+			tmp->child = nullptr;
+			delete root;
+			while (!dq.empty()) {
+				tmp = dq.front();
+				if (tmp->sibling) {
+					dq.push_back(tmp->sibling);
+				}
+				if (tmp->child) {
+					dq.push_back(tmp->child);
+				}
+				tmp->parent = nullptr;
+				tmp->sibling = nullptr;
+				tmp->child = nullptr;
+				delete tmp;
+				dq.pop_front();
+			} // while dq not empty
+		} // if root
 	} // ~PairingPQ()
 
 
@@ -124,16 +152,25 @@ public:
         // TODO: Implement this function.
 		if (root) {
 			std::deque<Node *> dq;
-			Node *tmp_child = root;
-			while (tmp_child) {
-				Node *tmp_sibling = tmp_child->sibling;
-				dq.push_back(tmp_child);
-				while (tmp_sibling) {
-					dq.push_back(tmp_sibling);
-					tmp_sibling = tmp_sibling->sibling;
-				} // while tmp_sibling
-				tmp_child = tmp_child->child;
-			} // while tmp_child
+			assert(root->sibling == nullptr);
+			if (root->child) {
+				dq.push_back(root->child);
+			}
+			root->child = nullptr;
+			while (!dq.empty()) {
+				Node *tmp = dq.front();
+				if (tmp->sibling) {
+					dq.push_back(tmp->sibling);
+				}
+				if (tmp->child) {
+					dq.push_back(tmp->child);
+				}
+				tmp->parent = nullptr;
+				tmp->sibling = nullptr;
+				tmp->child = nullptr;
+				root = meld(root, tmp);
+				dq.pop_front();
+			} // while dq not empty
 		} // if root
 	} // updatePriorities()
 
@@ -157,6 +194,7 @@ public:
     // Runtime: Amortized O(log(n))
     virtual void pop() {
         // TODO: Implement this function.
+		//printNode(root);
 		assert(!root->parent);
 		assert(!root->sibling);
 
@@ -182,8 +220,16 @@ public:
 			} // while dq.size() != 1
 
 			tmp = root;
+			tmp->child = nullptr;
 			delete tmp;
-			root = dq.front();
+			if (dq.size() == 1) {
+				root = dq.front();
+			} else {
+				root = nullptr;
+			}
+			//cout << "|root after pop = ";
+			//printPtr(root);
+			//cout << "|";
 			--sz;
 		} // if root
 	} // pop()
@@ -198,7 +244,14 @@ public:
         // TODO: Implement this function
 
         // These lines are present only so that this provided file compiles.
-		return root->getElt();
+		//cout << "\nInside top\n";
+		if (root) {
+			//cout << "top() = " << root->getElt() << "\n";
+			return root->getElt();
+		} else {
+			cout << "Root is nullptr when top is called!\n";
+			exit(1);
+		}
 	} // top()
 
 
@@ -250,7 +303,7 @@ public:
         // TODO: Implement this function
 		Node *newNode = new Node(val);
 		++sz;
-		root = meld(newNode, root);
+		root = meld(root, newNode);
 		return newNode;
 	} // addNode()
 
@@ -262,32 +315,60 @@ private:
 	size_t sz;
 
 	// Runtime: O(1)
-	Node* meld(Node *a, Node *b) {
+	Node* meld(Node *first, Node *second) {
 		// make b the child of a and the subtree of a sibling of b
-		assert(a->sibling == nullptr);
-		assert(b->sibling == nullptr);
-
-		if (this->compare(a->getElt(), b->getElt())) {
-			Node *a_sub = a->child;
-			a->child = b;
-			b->sibling = a_sub;
-			return a;
+		//cout << "Inside meld\n";
+		//assert(first->sibling == nullptr);
+		//assert(second->sibling == nullptr);
+		assert(!(first == nullptr && second == nullptr));
+		if (second == nullptr) {
+			return first;
 		}
-		Node *b_sub = b->child;
-		b->child = a;
-		a->sibling = b_sub;
-		return b;
+		if (first == nullptr) {
+			return second;
+		}
+		if (this->compare(second->getElt(), first->getElt())) {
+			second->parent = first;
+			second->sibling = first->child;
+			first->child = second;
+			//printNode(first);
+			//printNode(second);
+			return first;
+		}
+		first->parent = second;
+		first->sibling = second->child;
+		second->child = first;
+		//printNode(first);
+		//printNode(second);
+		return second;
 	}
 
-	// Runtime: O(n)
-	void makeEmpty(Node *n) {
-		while (n) {
-			makeEmpty(n->sibling);
-			makeEmpty(n->child);
-			delete(n);
+	void printNode(const Node *n) {
+		if (n == nullptr) {
+			cout << "-------------------------------------\n";
+			printPtr(n);
+			cout << "-------------------------------------\n";
+			return;
+		}
+		cout << "-------------------------------------\n";
+		cout << "Node value =  " << n->getElt() << "\n";
+		cout << "Node parent: ";
+		printPtr(n->parent);
+		cout << "Node sibling: ";
+		printPtr(n->sibling);
+		cout << "Node child: ";
+		printPtr(n->child);
+		cout << "-------------------------------------\n";
+	}
+
+	void printPtr(const Node *n) {
+		if (n == nullptr) {
+			cout << "NULL\n";
+		} else {
+			cout << "Node (val = " << n->getElt() << ")\n";
 		}
 	}
-};
+}; // PairingPQ
 
 
 #endif // PAIRINGPQ_H

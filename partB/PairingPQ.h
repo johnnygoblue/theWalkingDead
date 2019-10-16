@@ -74,7 +74,7 @@ public:
     // Description: Copy constructor.
     // Runtime: O(n)
     PairingPQ(const PairingPQ& other) :
-        BaseClass{ other.compare }, root{ other.root }, sz{ other.sz } {
+        BaseClass{ other.compare }, root{ nullptr }, sz{ 0 } {
         // TODO: Implement this function.
 		if (root) {
 			std::deque<Node *> dq;
@@ -94,7 +94,7 @@ public:
 				tmp->parent = nullptr;
 				tmp->sibling = nullptr;
 				tmp->child = nullptr;
-				root = meld(root, tmp);
+				addNode(tmp->getElt());
 				dq.pop_front();
 			} // while dq not empty
 		} // if root
@@ -281,13 +281,28 @@ public:
     // TODO: when you implement this function, uncomment the parameter names.
     void updateElt(Node* node, const TYPE & new_value) {
         // TODO: Implement this function
-		Node *par = node->parent;
-		node->elt = new_value;
-		while (par && this->compare(node->getElt(), par->getElt())) {
-			std::swap(node->elt, par->elt);
-			node = par;
-			par = node->parent;
+		if (!node->parent) {
+			node->elt = new_value;
+			return;
 		}
+		Node *par = node->parent;
+		Node *tmp = par->child;
+		while (tmp) {
+			if (tmp->sibling == node) {
+				tmp->sibling = node->sibling;
+				node->parent = nullptr;
+				meld(root, node);
+				break;
+			}
+			tmp = tmp->sibling;
+		}
+		//Node *par = node->parent;
+		//node->elt = new_value;
+		//while (par && this->compare(node->getElt(), par->getElt())) {
+		//	std::swap(node->elt, par->elt);
+		//	node = par;
+		//	par = node->parent;
+		//}
 	} // updateElt()
 
 

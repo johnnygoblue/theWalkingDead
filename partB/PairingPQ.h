@@ -274,6 +274,32 @@ public:
     // TODO: when you implement this function, uncomment the parameter names.
     void updateElt(Node* node, const TYPE & new_value) {
         // TODO: Implement this function
+		node->elt = new_value;
+		if (node != root) {
+			Node *par = node->parent;
+			Node *tmp = par->child;
+			// if node is the child/left-most sibling
+			if (tmp == node) {
+				par->child = node->sibling;
+				root = meld(node, par);
+				return;
+			}
+			// find out who's sibling points to child
+			while (tmp) {
+				if (tmp->sibling == node) {
+					//node->child->parent = par;
+					//par->child = node->child;
+					tmp->sibling = node->sibling;
+					//delete node;
+					//--sz;
+					//addNode(new_value);
+					meld(node, par);
+					return;
+				}
+				tmp = tmp->sibling;
+			}
+		}
+		/*
 		if (!node->parent) {
 			node->elt = new_value;
 			return;
@@ -285,9 +311,6 @@ public:
 				node->child->parent = par;
 				par->child = node->child;
 				tmp->sibling = node->sibling;
-				node->child = nullptr;
-				node->parent = nullptr;
-				node->sibling = nullptr;
 				delete node;
 				--sz;
 				addNode(new_value);
@@ -295,6 +318,7 @@ public:
 			}
 			tmp = tmp->sibling;
 		}
+		*/
 	} // updateElt()
 
 

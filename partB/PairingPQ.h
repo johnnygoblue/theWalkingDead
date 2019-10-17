@@ -126,8 +126,6 @@ public:
 			if (tmp) {
 				dq.push_back(tmp);
 			}
-			root->child = nullptr;
-			root = nullptr;
 			delete root;
 			while (!dq.empty()) {
 				tmp = dq.front();
@@ -137,9 +135,6 @@ public:
 				if (tmp->child) {
 					dq.push_back(tmp->child);
 				}
-				tmp->parent = nullptr;
-				tmp->sibling = nullptr;
-				tmp->child = nullptr;
 				delete tmp;
 				dq.pop_front();
 			} // while dq not empty

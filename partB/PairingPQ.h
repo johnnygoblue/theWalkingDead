@@ -76,28 +76,30 @@ public:
     PairingPQ(const PairingPQ& other) :
         BaseClass{ other.compare }, root{ nullptr }, sz{ 0 } {
         // TODO: Implement this function.
-		if (root) {
-			std::deque<Node *> dq;
-			Node *tmp = root;
+		if (other.root == nullptr) {
+			return;
+		}
+		if (other.size() == 1) {
+			addNode(other.root->getElt());
+			return;
+		}
+		std::deque<Node *> dq;
+		Node *tmp = other.root;
+		addNode(tmp->getElt());
+		if (tmp->child) {
+			dq.push_back(tmp->child);
+		}
+		while (!dq.empty()) {
+			tmp = dq.front();
+			if (tmp->sibling) {
+				dq.push_back(tmp->sibling);
+			}
 			if (tmp->child) {
 				dq.push_back(tmp->child);
 			}
-			root->child = nullptr;
-			while (!dq.empty()) {
-				tmp = dq.front();
-				if (tmp->sibling) {
-					dq.push_back(tmp->sibling);
-				}
-				if (tmp->child) {
-					dq.push_back(tmp->child);
-				}
-				tmp->parent = nullptr;
-				tmp->sibling = nullptr;
-				tmp->child = nullptr;
-				addNode(tmp->getElt());
-				dq.pop_front();
-			} // while dq not empty
-		} // if root
+			addNode(tmp->getElt());
+			dq.pop_front();
+		} // while dq not empty
 	} // PairingPQ()
 
 
@@ -120,13 +122,13 @@ public:
         // TODO: Implement this function.
 		if (root) {
 			std::deque<Node *> dq;
-			Node *tmp = root;
+			Node *tmp = root->child;
+			root->child = nullptr;
 			root = nullptr;
-			if (tmp->child) {
-				dq.push_back(tmp->child);
-			}
-			tmp->child = nullptr;
 			delete root;
+			if (tmp) {
+				dq.push_back(tmp);
+			}
 			while (!dq.empty()) {
 				tmp = dq.front();
 				if (tmp->sibling) {
@@ -197,41 +199,37 @@ public:
 		//printNode(root);
 		assert(!root->parent);
 		assert(!root->sibling);
-
-		if (root) {
-			std::deque<Node *> dq;
-			Node *tmp = root->child;
-			while (tmp) {
-				dq.push_back(tmp);
-				tmp = tmp->sibling;
-			} // tmp
-
-			for (size_t i = 0; i < dq.size(); ++i) {
-				tmp = dq[i];
-				tmp->parent = nullptr;
-				tmp->sibling = nullptr;
-			} // for dq
-
-			while (dq.size() > 1) {
-				tmp = meld(dq[0], dq[1]);
-				dq.pop_front();
-				dq.pop_front();
-				dq.push_back(tmp);
-			} // while dq.size() != 1
-
-			tmp = root;
-			tmp->child = nullptr;
-			delete tmp;
-			if (dq.size() == 1) {
-				root = dq.front();
-			} else {
-				root = nullptr;
-			}
-			//cout << "|root after pop = ";
-			//printPtr(root);
-			//cout << "|";
+		if (sz == 1) {
+			delete root;
+			root = nullptr;
 			--sz;
-		} // if root
+			return;
+		}
+		std::deque<Node *> dq;
+		Node *tmp = root->child;
+		while (tmp) {
+			dq.push_back(tmp);
+			tmp = tmp->sibling;
+		} // tmp
+
+		for (size_t i = 0; i < dq.size(); ++i) {
+			tmp = dq[i];
+			tmp->parent = nullptr;
+			tmp->sibling = nullptr;
+		} // for dq
+
+		while (dq.size() > 1) {
+			tmp = meld(dq[0], dq[1]);
+			dq.pop_front();
+			dq.pop_front();
+			dq.push_back(tmp);
+		} // while dq.size() != 1
+
+		// delete top-most element
+		root->child = nullptr;
+		delete root;
+		--sz;
+		root = tmp;
 	} // pop()
 
 
@@ -290,19 +288,16 @@ public:
 		while (tmp) {
 			if (tmp->sibling == node) {
 				tmp->sibling = node->sibling;
+				node->child = par;
 				node->parent = nullptr;
-				meld(root, node);
+				node->sibling = nullptr;
+				delete node;
+				--sz;
+				addNode(new_value);
 				break;
 			}
 			tmp = tmp->sibling;
 		}
-		//Node *par = node->parent;
-		//node->elt = new_value;
-		//while (par && this->compare(node->getElt(), par->getElt())) {
-		//	std::swap(node->elt, par->elt);
-		//	node = par;
-		//	par = node->parent;
-		//}
 	} // updateElt()
 
 

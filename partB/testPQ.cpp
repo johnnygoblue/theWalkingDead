@@ -77,14 +77,14 @@ void printPQHelper(Eecs281PQ<int> *pq) {
 		temp.push_back(pq->top());
 		pq->pop();
 	}
-	cout << "|PQ empty|";
+	//cout << "|PQ empty|";
 	assert(pq->empty());
 	while(!temp.empty()) {
-		cout << "pushing " << temp.back() << "\n";
+		//cout << "pushing " << temp.back() << "\n";
 		pq->push(temp.back());
 		temp.pop_back();
 	}
-	cout << "|PQ refilled|";
+	//cout << "|PQ refilled|";
 	cout << "\n";
 }
 
@@ -196,19 +196,27 @@ void testPriorityQueue(Eecs281PQ<int> *pq, const string &pqType) {
 void testPairing(vector<int> & vec) {
     cout << "Testing Pairing Heap separately" << endl;
     Eecs281PQ<int> * pq1 = new PairingPQ<int>(vec.begin(), vec.end());
-    Eecs281PQ<int> * pq2 = new PairingPQ<int>(*((PairingPQ<int> *)pq1));
-    // This line is different just to show two different ways to declare a
+    //printPQHelper(pq1);
+	Eecs281PQ<int> * pq2 = new PairingPQ<int>(*((PairingPQ<int> *)pq1));
+    //printPQHelper(pq2);
+	// This line is different just to show two different ways to declare a
     // pairing heap: as an Eecs281PQ and as a PairingPQ. Yay for inheritance!
     PairingPQ<int> * pq3 = new PairingPQ<int>();
     *pq3 = *((PairingPQ<int> *)pq2);
 
     pq1->push(3);
     pq2->pop();
+    //printPQHelper(pq2);
+	assert(pq2->top() == 0); // JC
+	assert(pq2->size() == 1); // JC
     assert(pq1->size() == 3);
+	assert(pq1->top() == 3); // JC
     assert(!pq1->empty());
     assert(pq1->top() == 3);
     pq2->push(pq3->top());
     assert(pq2->top() == pq3->top());
+	assert(pq3->top() == 1); // JC
+	assert(pq2->top() == 1); // JC
 
     cout << "Basic tests done, calling destructors" << endl;
 

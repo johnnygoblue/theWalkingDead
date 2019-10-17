@@ -123,12 +123,12 @@ public:
 		if (root) {
 			std::deque<Node *> dq;
 			Node *tmp = root->child;
-			root->child = nullptr;
-			root = nullptr;
-			delete root;
 			if (tmp) {
 				dq.push_back(tmp);
 			}
+			root->child = nullptr;
+			root = nullptr;
+			delete root;
 			while (!dq.empty()) {
 				tmp = dq.front();
 				if (tmp->sibling) {
@@ -287,14 +287,16 @@ public:
 		Node *tmp = par->child;
 		while (tmp) {
 			if (tmp->sibling == node) {
+				node->child->parent = par;
+				par->child = node->child;
 				tmp->sibling = node->sibling;
-				node->child = par;
+				node->child = nullptr;
 				node->parent = nullptr;
 				node->sibling = nullptr;
 				delete node;
 				--sz;
 				addNode(new_value);
-				break;
+				return;
 			}
 			tmp = tmp->sibling;
 		}
